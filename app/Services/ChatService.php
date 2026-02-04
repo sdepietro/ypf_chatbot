@@ -38,14 +38,32 @@ class ChatService
         return $chat->load('agent');
     }
 
-    public function sendMessage(Chat $chat, string $content): array
+    public function sendMessage(Chat $chat, string $content, array $sttMetadata = []): array
     {
-        // Save human message
-        $humanMessage = Message::create([
+        // Prepare human message data
+        $humanMessageData = [
             'chat_id' => $chat->id,
             'role' => 'human',
             'content' => $content,
-        ]);
+        ];
+
+        // Add STT metadata if provided (message came from voice)
+        if (!empty($sttMetadata)) {
+            $humanMessageData = array_merge($humanMessageData, [
+                'stt_provider' => $sttMetadata['stt_provider'] ?? null,
+                'stt_model' => $sttMetadata['stt_model'] ?? null,
+                'stt_duration_ms' => $sttMetadata['stt_duration_ms'] ?? null,
+                'stt_cost' => $sttMetadata['stt_cost'] ?? null,
+            ]);
+
+            // Update chat STT cost
+            if (isset($sttMetadata['stt_cost']) && $sttMetadata['stt_cost'] > 0) {
+                $chat->addSttCost((float) $sttMetadata['stt_cost']);
+            }
+        }
+
+        // Save human message
+        $humanMessage = Message::create($humanMessageData);
 
         // Get chat history for context
         $history = $chat->messages()
@@ -79,8 +97,8 @@ class ChatService
                 ],
             ]);
 
-            // Update chat totals
-            $chat->addTokensAndCost(
+            // Update chat totals (LLM cost)
+            $chat->addLlmCost(
                 $response['total_tokens'],
                 $response['cost']
             );

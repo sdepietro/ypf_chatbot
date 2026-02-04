@@ -159,40 +159,133 @@
         overflow: hidden;
     }
 
-    /* Header del chat */
+    /* Header del chat - 2 filas */
     .chat-header {
-        padding: 1rem 1.5rem;
+        padding: 0.75rem 1.25rem;
         background: var(--cui-tertiary-bg);
         border-bottom: 1px solid var(--cui-border-color);
         display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        flex-shrink: 0;
+    }
+
+    .chat-header-row {
+        display: flex;
         align-items: center;
         justify-content: space-between;
-        flex-shrink: 0;
+        gap: 1rem;
+    }
+
+    .chat-header-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        min-width: 0;
     }
 
     .chat-header-info h2 {
         margin: 0;
-        font-size: 1.125rem;
+        font-size: 1rem;
         font-weight: 600;
         color: var(--cui-body-color);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .chat-header-agent {
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        margin-top: 0.25rem;
     }
 
     .chat-header-agent .badge {
         background: var(--cui-success);
         font-weight: 500;
-        padding: 0.25rem 0.625rem;
-        font-size: 0.75rem;
+        padding: 0.2rem 0.5rem;
+        font-size: 0.7rem;
     }
 
     .chat-header-agent .badge-model {
         background: var(--cui-info);
+    }
+
+    /* Settings dropdown button */
+    .chat-settings-btn {
+        background: var(--cui-secondary-bg);
+        border: 1px solid var(--cui-border-color);
+        color: var(--cui-body-color);
+        padding: 0.35rem 0.6rem;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        transition: all 0.2s ease;
+    }
+
+    .chat-settings-btn:hover {
+        background: var(--cui-tertiary-bg);
+        border-color: var(--ypf-blue);
+    }
+
+    /* Settings dropdown content */
+    .chat-settings-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: var(--cui-body-bg);
+        border: 1px solid var(--cui-border-color);
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        min-width: 280px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+        display: none;
+    }
+
+    .chat-settings-dropdown.show {
+        display: block;
+    }
+
+    .chat-settings-wrapper {
+        position: relative;
+    }
+
+    .settings-group {
+        margin-bottom: 0.75rem;
+    }
+
+    .settings-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .settings-group-label {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--cui-secondary-color);
+        margin-bottom: 0.35rem;
+        font-weight: 600;
+    }
+
+    .settings-group select {
+        width: 100%;
+        font-size: 0.8rem;
+        padding: 0.4rem 0.6rem;
+        border-radius: 0.375rem;
+        border: 1px solid var(--cui-border-color);
+        background: var(--cui-tertiary-bg);
+        color: var(--cui-body-color);
+        cursor: pointer;
+    }
+
+    .settings-group select:focus {
+        outline: none;
+        border-color: var(--ypf-blue);
     }
 
     /* Model info bajo los mensajes del bot */
@@ -212,29 +305,39 @@
         font-family: monospace;
     }
 
+    /* Stats compactas en fila 2 */
     .chat-stats {
         display: flex;
-        gap: 1rem;
+        gap: 0.5rem;
+        flex-wrap: wrap;
     }
 
     .chat-stat {
-        text-align: center;
-        padding: 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.25rem 0.5rem;
         background: var(--cui-secondary-bg);
-        border-radius: 0.5rem;
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
     }
 
     .chat-stat-value {
-        font-size: 1rem;
         font-weight: 600;
         color: var(--ypf-blue);
     }
 
     .chat-stat-label {
-        font-size: 0.6875rem;
         color: var(--cui-secondary-color);
+        font-size: 0.65rem;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+    }
+
+    .chat-stat-divider {
+        width: 1px;
+        height: 1rem;
+        background: var(--cui-border-color);
+        margin: 0 0.25rem;
     }
 
     /* Contenedor de mensajes */
@@ -664,6 +767,7 @@
         color: var(--cui-success);
     }
 
+
     /* Voice not supported warning */
     .voice-warning {
         background: var(--cui-warning-bg-subtle);
@@ -697,12 +801,13 @@
 
     /* Responsive */
     @media (max-width: 992px) {
-        .chat-stats {
-            display: none;
-        }
         .chat-sidebar {
             width: 240px;
             min-width: 240px;
+        }
+
+        .chat-header-row:last-child {
+            flex-wrap: wrap;
         }
     }
 
@@ -711,10 +816,38 @@
             flex-direction: column;
             height: calc(100vh - 160px);
         }
+
         .chat-sidebar {
             width: 100%;
             min-width: 100%;
             max-height: 200px;
+        }
+
+        .chat-header {
+            padding: 0.5rem 0.75rem;
+        }
+
+        .chat-header-info h2 {
+            font-size: 0.9rem;
+        }
+
+        .chat-stats {
+            display: none;
+        }
+
+        .chat-header-row:last-child {
+            justify-content: flex-end;
+        }
+
+        .chat-settings-dropdown {
+            right: -0.5rem;
+            min-width: 250px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .chat-header-agent .badge-model {
+            display: none;
         }
     }
 </style>
@@ -741,27 +874,82 @@
     {{-- Main Chat --}}
     <div class="chat-main">
         <div class="chat-header" id="chatHeader" style="display: none;">
-            <div class="chat-header-info">
-                <h2 id="chatTitle">Conversacion</h2>
-                <div class="chat-header-agent">
-                    <span class="badge" id="chatAgentBadge">
-                        <i class="fas fa-robot me-1"></i>
-                        <span id="chatAgent">-</span>
-                    </span>
-                    <span class="badge badge-model" id="chatModelBadge" style="display: none;">
-                        <i class="fas fa-microchip me-1"></i>
-                        <span id="chatModel">-</span>
-                    </span>
+            {{-- Fila 1: Título + Badge --}}
+            <div class="chat-header-row">
+                <div class="chat-header-info">
+                    <h2 id="chatTitle">Conversacion</h2>
+                    <div class="chat-header-agent">
+                        <span class="badge" id="chatAgentBadge">
+                            <i class="fas fa-robot me-1"></i>
+                            <span id="chatAgent">-</span>
+                        </span>
+                        <span class="badge badge-model" id="chatModelBadge" style="display: none;">
+                            <i class="fas fa-microchip me-1"></i>
+                            <span id="chatModel">-</span>
+                        </span>
+                    </div>
                 </div>
             </div>
-            <div class="chat-stats">
-                <div class="chat-stat">
-                    <div class="chat-stat-value" id="chatTokens">0</div>
-                    <div class="chat-stat-label">Tokens</div>
+
+            {{-- Fila 2: Stats + Settings --}}
+            <div class="chat-header-row">
+                <div class="chat-stats">
+                    <div class="chat-stat" title="Tokens usados">
+                        <span class="chat-stat-value" id="chatTokens">0</span>
+                        <span class="chat-stat-label">tokens</span>
+                    </div>
+                    <div class="chat-stat-divider"></div>
+                    <div class="chat-stat" title="Costo del modelo de lenguaje">
+                        <span class="chat-stat-label">LLM</span>
+                        <span class="chat-stat-value">$<span id="chatLlmCost">0.00</span></span>
+                    </div>
+                    <div class="chat-stat" title="Costo de Text-to-Speech">
+                        <span class="chat-stat-label">TTS</span>
+                        <span class="chat-stat-value">$<span id="chatTtsCost">0.00</span></span>
+                    </div>
+                    <div class="chat-stat" title="Costo de Speech-to-Text">
+                        <span class="chat-stat-label">STT</span>
+                        <span class="chat-stat-value">$<span id="chatSttCost">0.00</span></span>
+                    </div>
                 </div>
-                <div class="chat-stat">
-                    <div class="chat-stat-value">$<span id="chatCost">0.00</span></div>
-                    <div class="chat-stat-label">Costo</div>
+
+                {{-- Settings dropdown --}}
+                <div class="chat-settings-wrapper">
+                    <button class="chat-settings-btn" onclick="toggleSettingsDropdown()" title="Configuracion de voz">
+                        <i class="fas fa-sliders-h"></i>
+                        <span class="d-none d-sm-inline">Voz</span>
+                    </button>
+                    <div class="chat-settings-dropdown" id="settingsDropdown">
+                        <div class="settings-group">
+                            <div class="settings-group-label">
+                                <i class="fas fa-microphone me-1"></i>Speech-to-Text
+                            </div>
+                            <select id="sttProvider" onchange="onSttProviderChange()">
+                                <option value="native">Navegador (Nativo)</option>
+                                <option value="openai">OpenAI Whisper</option>
+                            </select>
+                        </div>
+                        <div class="settings-group">
+                            <div class="settings-group-label">
+                                <i class="fas fa-volume-up me-1"></i>Text-to-Speech
+                            </div>
+                            <select id="ttsProvider" onchange="onTtsProviderChange()">
+                                <option value="native">Navegador (Nativo)</option>
+                                <option value="openai">OpenAI TTS</option>
+                            </select>
+                        </div>
+                        <div class="settings-group" id="ttsVoiceSelector" style="display: none;">
+                            <div class="settings-group-label">Voz OpenAI</div>
+                            <select id="ttsVoice" onchange="onTtsVoiceChange()">
+                                <option value="alloy">Alloy</option>
+                                <option value="echo">Echo</option>
+                                <option value="fable">Fable</option>
+                                <option value="onyx">Onyx</option>
+                                <option value="nova">Nova</option>
+                                <option value="shimmer">Shimmer</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -877,6 +1065,7 @@ let isSwitchingChat = false;
 document.addEventListener('DOMContentLoaded', function() {
     loadChats();
     initVoice(); // Inicializar funcionalidades de voz
+    initSpeechProviders(); // Inicializar selectores de proveedores STT/TTS
 
     const messageInput = document.getElementById('messageInput');
 
@@ -890,11 +1079,11 @@ document.addEventListener('DOMContentLoaded', function() {
     messageInput.addEventListener('input', function() {
         this.style.height = 'auto';
         this.style.height = Math.min(this.scrollHeight, 200) + 'px';
-        stopSpeaking(); // Detener TTS si el usuario escribe
+        stopSpeakingUnified(); // Detener TTS si el usuario escribe
     });
 
     // Stop TTS when user focuses on input
-    messageInput.addEventListener('focus', stopSpeaking);
+    messageInput.addEventListener('focus', stopSpeakingUnified);
 });
 
 async function loadChats() {
@@ -1009,7 +1198,9 @@ async function selectChat(chatId) {
     document.getElementById('chatModel').textContent = '-';
     document.getElementById('chatModelBadge').style.display = 'none';
     document.getElementById('chatTokens').textContent = '0';
-    document.getElementById('chatCost').textContent = '0.00';
+    document.getElementById('chatLlmCost').textContent = '0.00';
+    document.getElementById('chatTtsCost').textContent = '0.00';
+    document.getElementById('chatSttCost').textContent = '0.00';
 
     try {
         const [chatResponse, messagesResponse] = await Promise.all([
@@ -1029,7 +1220,9 @@ async function selectChat(chatId) {
             document.getElementById('chatTitle').textContent = chatData.data.title || 'Conversacion';
             document.getElementById('chatAgent').textContent = chatData.data.agent?.name || 'Bot';
             document.getElementById('chatTokens').textContent = chatData.data.total_tokens || 0;
-            document.getElementById('chatCost').textContent = parseFloat(chatData.data.total_cost || 0).toFixed(4);
+            document.getElementById('chatLlmCost').textContent = parseFloat(chatData.data.total_llm_cost || 0).toFixed(4);
+            document.getElementById('chatTtsCost').textContent = parseFloat(chatData.data.total_tts_cost || 0).toFixed(4);
+            document.getElementById('chatSttCost').textContent = parseFloat(chatData.data.total_stt_cost || 0).toFixed(4);
         }
 
         if (messagesData.status) {
@@ -1064,7 +1257,9 @@ function clearChatUI() {
     document.getElementById('chatModel').textContent = '-';
     document.getElementById('chatModelBadge').style.display = 'none';
     document.getElementById('chatTokens').textContent = '0';
-    document.getElementById('chatCost').textContent = '0.00';
+    document.getElementById('chatLlmCost').textContent = '0.00';
+    document.getElementById('chatTtsCost').textContent = '0.00';
+    document.getElementById('chatSttCost').textContent = '0.00';
 }
 
 function renderMessages(messages) {
@@ -1161,10 +1356,23 @@ async function sendMessage() {
     container.appendChild(typingDiv);
     container.scrollTop = container.scrollHeight;
 
+    // Prepare request body with optional STT metadata
+    const requestBody = { content };
+    if (currentSttMetadata) {
+        Object.assign(requestBody, currentSttMetadata);
+        // Update STT cost UI
+        if (currentSttMetadata.stt_cost > 0) {
+            const currentSttCost = parseFloat(document.getElementById('chatSttCost').textContent) || 0;
+            document.getElementById('chatSttCost').textContent = (currentSttCost + currentSttMetadata.stt_cost).toFixed(4);
+        }
+    }
+    const sttMetadataUsed = currentSttMetadata;
+    currentSttMetadata = null; // Clear for next message
+
     try {
         const response = await apiFetch(`/api/chats/${currentChatId}/messages`, {
             method: 'POST',
-            body: JSON.stringify({ content })
+            body: JSON.stringify(requestBody)
         });
 
         const data = await response.json();
@@ -1199,13 +1407,13 @@ async function sendMessage() {
             container.scrollTop = container.scrollHeight;
 
             // TTS: Leer respuesta del bot en voz alta si está habilitado
-            speakText(botMsg.content);
+            speakTextUnified(botMsg.content, botMsg.id);
 
             if (usage) {
                 const currentTokens = parseInt(document.getElementById('chatTokens').textContent) || 0;
-                const currentCost = parseFloat(document.getElementById('chatCost').textContent) || 0;
+                const currentLlmCost = parseFloat(document.getElementById('chatLlmCost').textContent) || 0;
                 document.getElementById('chatTokens').textContent = currentTokens + (usage.total_tokens || 0);
-                document.getElementById('chatCost').textContent = (currentCost + (usage.cost || 0)).toFixed(4);
+                document.getElementById('chatLlmCost').textContent = (currentLlmCost + (usage.cost || 0)).toFixed(4);
             }
 
             loadChats();
@@ -1447,21 +1655,21 @@ function setupPushToTalk() {
     // Prevenir el menu contextual en el boton (para long-press en mobile)
     voiceBtn.addEventListener('contextmenu', (e) => e.preventDefault());
 
-    // Mouse events (desktop)
-    voiceBtn.addEventListener('mousedown', startVoiceRecording);
-    voiceBtn.addEventListener('mouseup', stopVoiceRecording);
-    voiceBtn.addEventListener('mouseleave', stopVoiceRecording); // Por si el usuario suelta fuera del boton
+    // Mouse events (desktop) - usar funciones unificadas
+    voiceBtn.addEventListener('mousedown', startVoiceRecordingUnified);
+    voiceBtn.addEventListener('mouseup', stopVoiceRecordingUnified);
+    voiceBtn.addEventListener('mouseleave', stopVoiceRecordingUnified); // Por si el usuario suelta fuera del boton
 
     // Touch events (mobile)
     voiceBtn.addEventListener('touchstart', (e) => {
         e.preventDefault(); // Prevenir comportamiento por defecto del touch
-        startVoiceRecording(e);
+        startVoiceRecordingUnified(e);
     });
     voiceBtn.addEventListener('touchend', (e) => {
         e.preventDefault();
-        stopVoiceRecording(e);
+        stopVoiceRecordingUnified(e);
     });
-    voiceBtn.addEventListener('touchcancel', stopVoiceRecording);
+    voiceBtn.addEventListener('touchcancel', stopVoiceRecordingUnified);
 }
 
 async function startVoiceRecording(e) {
@@ -1866,6 +2074,312 @@ function testTTSFromModal() {
 // Test function - run from console: testTTS()
 function testTTS() {
     testTTSFromModal();
+}
+
+// ===========================================
+// OpenAI Speech Providers (STT/TTS)
+// ===========================================
+
+let sttProvider = 'native';
+let ttsProvider = 'native';
+let openaiMediaRecorder = null;
+let openaiAudioChunks = [];
+let currentSttMetadata = null; // Para guardar metadata STT del mensaje actual
+
+function initSpeechProviders() {
+    // Cargar preferencias de localStorage
+    sttProvider = localStorage.getItem('sttProvider') || 'native';
+    ttsProvider = localStorage.getItem('ttsProvider') || 'native';
+    const ttsVoice = localStorage.getItem('ttsVoice') || 'alloy';
+
+    // Actualizar selectores
+    const sttSelect = document.getElementById('sttProvider');
+    const ttsSelect = document.getElementById('ttsProvider');
+    const voiceSelect = document.getElementById('ttsVoice');
+
+    if (sttSelect) sttSelect.value = sttProvider;
+    if (ttsSelect) ttsSelect.value = ttsProvider;
+    if (voiceSelect) voiceSelect.value = ttsVoice;
+
+    // Mostrar/ocultar selector de voz
+    updateVoiceSelectorVisibility();
+
+    // Cerrar dropdown al hacer click fuera
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('settingsDropdown');
+        const btn = document.querySelector('.chat-settings-btn');
+        if (dropdown && btn && !dropdown.contains(e.target) && !btn.contains(e.target)) {
+            dropdown.classList.remove('show');
+        }
+    });
+
+    console.log(`Speech providers initialized: STT=${sttProvider}, TTS=${ttsProvider}`);
+}
+
+function toggleSettingsDropdown() {
+    const dropdown = document.getElementById('settingsDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('show');
+    }
+}
+
+function onTtsVoiceChange() {
+    const voiceSelect = document.getElementById('ttsVoice');
+    if (voiceSelect) {
+        localStorage.setItem('ttsVoice', voiceSelect.value);
+        console.log(`TTS voice changed to: ${voiceSelect.value}`);
+    }
+}
+
+function onSttProviderChange() {
+    const select = document.getElementById('sttProvider');
+    sttProvider = select.value;
+    localStorage.setItem('sttProvider', sttProvider);
+    console.log(`STT provider changed to: ${sttProvider}`);
+}
+
+function onTtsProviderChange() {
+    const select = document.getElementById('ttsProvider');
+    ttsProvider = select.value;
+    localStorage.setItem('ttsProvider', ttsProvider);
+    updateVoiceSelectorVisibility();
+    console.log(`TTS provider changed to: ${ttsProvider}`);
+}
+
+function updateVoiceSelectorVisibility() {
+    const voiceSelector = document.getElementById('ttsVoiceSelector');
+    if (voiceSelector) {
+        voiceSelector.style.display = ttsProvider === 'openai' ? 'flex' : 'none';
+    }
+}
+
+// ===========================================
+// OpenAI Whisper STT (Speech-to-Text)
+// ===========================================
+
+async function startOpenAIRecording() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+        openaiAudioChunks = [];
+        openaiMediaRecorder = new MediaRecorder(stream, {
+            mimeType: 'audio/webm;codecs=opus'
+        });
+
+        openaiMediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+                openaiAudioChunks.push(event.data);
+            }
+        };
+
+        openaiMediaRecorder.onstop = async () => {
+            // Detener todas las pistas del stream
+            stream.getTracks().forEach(track => track.stop());
+
+            const audioBlob = new Blob(openaiAudioChunks, { type: 'audio/webm' });
+            await transcribeWithWhisper(audioBlob);
+        };
+
+        openaiMediaRecorder.start();
+        isRecording = true;
+        updateVoiceUI('recording');
+        console.log('OpenAI recording started');
+    } catch (error) {
+        console.error('Error starting OpenAI recording:', error);
+        showVoiceWarning('Error al acceder al microfono: ' + error.message);
+    }
+}
+
+function stopOpenAIRecording() {
+    if (openaiMediaRecorder && openaiMediaRecorder.state !== 'inactive') {
+        openaiMediaRecorder.stop();
+        isRecording = false;
+        console.log('OpenAI recording stopped');
+    }
+}
+
+async function transcribeWithWhisper(audioBlob) {
+    updateVoiceStatus('Transcribiendo...');
+
+    try {
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'audio.webm');
+        formData.append('language', 'es');
+        if (currentChatId) {
+            formData.append('chat_id', currentChatId);
+        }
+
+        // Usar API_TOKEN global y no setear Content-Type (el browser lo hace automatico para FormData)
+        const response = await fetch('/api/speech/transcribe', {
+            method: 'POST',
+            headers: {
+                'X-Auth-Token': API_TOKEN,
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.status && data.data.text) {
+            const text = data.data.text.trim();
+            console.log('Whisper transcription:', text);
+
+            // Guardar metadata STT para el mensaje
+            currentSttMetadata = {
+                stt_provider: data.data.stt_provider,
+                stt_model: data.data.stt_model,
+                stt_duration_ms: data.data.stt_duration_ms,
+                stt_cost: data.data.stt_cost
+            };
+
+            // Poner texto en el input y enviar
+            const messageInput = document.getElementById('messageInput');
+            messageInput.value = text;
+            updateVoiceUI('idle');
+            sendMessage();
+        } else {
+            console.error('Whisper transcription failed:', data.message);
+            showVoiceWarning(data.message || 'Error al transcribir el audio');
+            updateVoiceUI('idle');
+        }
+    } catch (error) {
+        console.error('Whisper transcription error:', error);
+        showVoiceWarning('Error al transcribir: ' + error.message);
+        updateVoiceUI('idle');
+    }
+}
+
+// ===========================================
+// OpenAI TTS (Text-to-Speech)
+// ===========================================
+
+let currentAudio = null;
+
+async function speakWithOpenAI(text, messageId = null) {
+    ttsLog(`speakWithOpenAI() llamado con texto de ${text?.length || 0} caracteres`, 'info');
+
+    const ttsEnabled = document.getElementById('ttsEnabled');
+    if (!ttsEnabled || !ttsEnabled.checked) {
+        ttsLog('TTS deshabilitado por usuario, abortando', 'warning');
+        return;
+    }
+
+    // Detener audio anterior si existe
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
+    }
+
+    updateVoiceUI('speaking');
+
+    try {
+        const voice = document.getElementById('ttsVoice')?.value || 'alloy';
+
+        const response = await apiFetch('/api/speech/synthesize', {
+            method: 'POST',
+            body: JSON.stringify({
+                text: text,
+                voice: voice,
+                message_id: messageId
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.status && data.data.audio_base64) {
+            ttsLog(`Audio recibido: ${data.data.tts_characters} chars, voz: ${data.data.tts_voice}`, 'success');
+
+            // Update TTS cost in UI
+            if (data.data.tts_cost > 0) {
+                const currentTtsCost = parseFloat(document.getElementById('chatTtsCost').textContent) || 0;
+                document.getElementById('chatTtsCost').textContent = (currentTtsCost + data.data.tts_cost).toFixed(4);
+            }
+
+            // Crear elemento de audio y reproducir
+            const audioData = `data:${data.data.content_type};base64,${data.data.audio_base64}`;
+            currentAudio = new Audio(audioData);
+
+            currentAudio.onended = () => {
+                ttsLog('Audio terminado de reproducir', 'success');
+                updateVoiceUI('idle');
+                currentAudio = null;
+            };
+
+            currentAudio.onerror = (e) => {
+                ttsLog(`Error reproduciendo audio: ${e.message || 'unknown'}`, 'error');
+                updateVoiceUI('idle');
+                currentAudio = null;
+            };
+
+            await currentAudio.play();
+            ttsLog('Audio comenzando a reproducir', 'success');
+        } else {
+            ttsLog(`Error de OpenAI TTS: ${data.message}`, 'error');
+            updateVoiceUI('idle');
+        }
+    } catch (error) {
+        ttsLog(`Error en speakWithOpenAI: ${error.message}`, 'error');
+        updateVoiceUI('idle');
+    }
+}
+
+// ===========================================
+// Funciones Unificadas (Native vs OpenAI)
+// ===========================================
+
+// Wrapper para iniciar grabacion (decide native vs openai)
+async function startVoiceRecordingUnified(e) {
+    if (!currentChatId) {
+        showVoiceWarning('Selecciona o crea una conversacion primero.');
+        return;
+    }
+
+    if (isLoading || isRecording) {
+        return;
+    }
+
+    if (sttProvider === 'openai') {
+        await startOpenAIRecording();
+    } else {
+        await startVoiceRecording(e);
+    }
+}
+
+// Wrapper para detener grabacion (decide native vs openai)
+function stopVoiceRecordingUnified(e) {
+    if (!isRecording) return;
+
+    if (sttProvider === 'openai') {
+        stopOpenAIRecording();
+    } else {
+        stopVoiceRecording(e);
+    }
+}
+
+// Wrapper para TTS (decide native vs openai)
+function speakTextUnified(text, messageId = null) {
+    if (ttsProvider === 'openai') {
+        speakWithOpenAI(text, messageId);
+    } else {
+        speakText(text);
+    }
+}
+
+// Detener cualquier tipo de audio
+function stopSpeakingUnified() {
+    // Detener audio OpenAI
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
+    }
+
+    // Detener TTS nativo
+    if (ttsSupported && speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+    }
+
+    updateVoiceUI('idle');
 }
 
 </script>

@@ -19,6 +19,18 @@ class Message extends Model
         'provider',
         'model',
         'meta',
+        // STT fields
+        'stt_provider',
+        'stt_model',
+        'stt_duration_ms',
+        'stt_cost',
+        // TTS fields
+        'tts_provider',
+        'tts_model',
+        'tts_voice',
+        'tts_duration_ms',
+        'tts_characters',
+        'tts_cost',
     ];
 
     protected $casts = [
@@ -26,6 +38,13 @@ class Message extends Model
         'completion_tokens' => 'integer',
         'cost' => 'decimal:6',
         'meta' => 'array',
+        // STT casts
+        'stt_duration_ms' => 'integer',
+        'stt_cost' => 'decimal:6',
+        // TTS casts
+        'tts_duration_ms' => 'integer',
+        'tts_characters' => 'integer',
+        'tts_cost' => 'decimal:6',
     ];
 
     public function chat(): BelongsTo

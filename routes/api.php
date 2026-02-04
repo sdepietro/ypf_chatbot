@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AgentController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\ConfigController;
 use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\SpeechController;
 use Illuminate\Support\Facades\Route;
 
 // Protected routes
@@ -31,4 +32,9 @@ Route::middleware('master.auth')->group(function () {
     Route::get('/agents/{id}', [AgentController::class, 'show']);
     Route::put('/agents/{id}', [AgentController::class, 'update']);
     Route::delete('/agents/{id}', [AgentController::class, 'destroy']);
+
+    // Speech (STT/TTS)
+    Route::post('/speech/transcribe', [SpeechController::class, 'transcribe']);
+    Route::post('/speech/synthesize', [SpeechController::class, 'synthesize']);
+    Route::get('/speech/voices', [SpeechController::class, 'voices']);
 });

@@ -73,7 +73,18 @@ class MessageController extends Controller
             ], 400);
         }
 
-        $result = $this->chatService->sendMessage($chat, $request->content);
+        // Collect STT metadata if provided
+        $sttMetadata = [];
+        if ($request->has('stt_cost') || $request->has('stt_provider')) {
+            $sttMetadata = [
+                'stt_provider' => $request->input('stt_provider'),
+                'stt_model' => $request->input('stt_model'),
+                'stt_duration_ms' => $request->input('stt_duration_ms'),
+                'stt_cost' => $request->input('stt_cost'),
+            ];
+        }
+
+        $result = $this->chatService->sendMessage($chat, $request->content, $sttMetadata);
 
         $response = [
             'human_message' => [

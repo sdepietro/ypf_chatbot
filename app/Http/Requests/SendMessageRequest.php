@@ -17,6 +17,11 @@ class SendMessageRequest extends FormRequest
     {
         return [
             'content' => 'required|string|max:2000',
+            // Optional STT metadata (when message came from voice)
+            'stt_provider' => 'nullable|string|max:50',
+            'stt_model' => 'nullable|string|max:50',
+            'stt_duration_ms' => 'nullable|integer|min:0',
+            'stt_cost' => 'nullable|numeric|min:0',
         ];
     }
 
