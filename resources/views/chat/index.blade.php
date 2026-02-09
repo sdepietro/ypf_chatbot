@@ -2,10 +2,6 @@
 
 @section('title', 'Chat - YPF Chat Station')
 
-@section('breadcrumb')
-<li class="breadcrumb-item active">Chat</li>
-@endsection
-
 @push('css')
 <style>
     :root {
@@ -14,15 +10,22 @@
         --ypf-yellow: #ffd100;
     }
 
-    /* Layout principal del chat */
+    /* === FULL-HEIGHT: ocultar header, footer, breadcrumb del master === */
+    .header { display: none !important; }
+    .footer { display: none !important; }
+    .body { padding: 0 !important; }
+    .body > .container-lg { max-width: 100% !important; padding: 0 !important; }
+    .wrapper { min-height: 100vh !important; }
+
+    /* Layout principal del chat - ocupa toda la ventana */
     .chat-wrapper {
         display: flex;
-        height: calc(100vh - 180px);
-        margin: -1rem -1.5rem;
-        border-radius: 0.5rem;
+        height: 100vh;
+        margin: 0;
+        border-radius: 0;
         overflow: hidden;
         background: var(--cui-body-bg);
-        border: 1px solid var(--cui-border-color);
+        border: none;
     }
 
     /* Sidebar (columna izquierda) */
@@ -159,35 +162,29 @@
         overflow: hidden;
     }
 
-    /* Header del chat - 2 filas */
+    /* Header del chat - 1 sola fila compacta */
     .chat-header {
-        padding: 0.75rem 1.25rem;
+        padding: 0.4rem 1rem;
         background: var(--cui-tertiary-bg);
         border-bottom: 1px solid var(--cui-border-color);
         display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        flex-shrink: 0;
-    }
-
-    .chat-header-row {
-        display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 1rem;
+        gap: 0.75rem;
+        flex-shrink: 0;
     }
 
     .chat-header-info {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
-        flex-wrap: wrap;
+        gap: 0.5rem;
         min-width: 0;
+        flex: 1;
     }
 
     .chat-header-info h2 {
         margin: 0;
-        font-size: 1rem;
+        font-size: 0.9rem;
         font-weight: 600;
         color: var(--cui-body-color);
         white-space: nowrap;
@@ -195,44 +192,116 @@
         text-overflow: ellipsis;
     }
 
-    .chat-header-agent {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
     .chat-header-agent .badge {
         background: var(--cui-success);
         font-weight: 500;
-        padding: 0.2rem 0.5rem;
-        font-size: 0.7rem;
+        padding: 0.15rem 0.4rem;
+        font-size: 0.65rem;
     }
 
     .chat-header-agent .badge-model {
         background: var(--cui-info);
     }
 
-    /* Settings dropdown button */
-    .chat-settings-btn {
-        background: var(--cui-secondary-bg);
-        border: 1px solid var(--cui-border-color);
-        color: var(--cui-body-color);
-        padding: 0.35rem 0.6rem;
-        border-radius: 0.375rem;
-        cursor: pointer;
-        font-size: 0.8rem;
+    .chat-header-actions {
         display: flex;
         align-items: center;
         gap: 0.35rem;
+        flex-shrink: 0;
+    }
+
+    /* Total cost inline badge */
+    .chat-cost-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.2rem 0.5rem;
+        background: var(--cui-secondary-bg);
+        border-radius: 0.375rem;
+        font-size: 0.7rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+
+    .chat-cost-badge:hover {
+        border-color: var(--ypf-blue);
+    }
+
+    .chat-cost-badge .cost-value {
+        font-weight: 600;
+        color: var(--ypf-blue);
+    }
+
+    .chat-cost-badge .cost-label {
+        color: var(--cui-secondary-color);
+    }
+
+    /* Stats popover/dropdown */
+    .stats-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: var(--cui-body-bg);
+        border: 1px solid var(--cui-border-color);
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        min-width: 220px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+        display: none;
+    }
+
+    .stats-dropdown.show {
+        display: block;
+    }
+
+    .stats-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.25rem 0;
+        font-size: 0.75rem;
+    }
+
+    .stats-row-label {
+        color: var(--cui-secondary-color);
+    }
+
+    .stats-row-value {
+        font-weight: 600;
+        color: var(--ypf-blue);
+    }
+
+    .stats-row-divider {
+        border-top: 1px solid var(--cui-border-color);
+        margin: 0.35rem 0;
+    }
+
+    /* Header icon buttons */
+    .header-icon-btn {
+        background: var(--cui-secondary-bg);
+        border: 1px solid var(--cui-border-color);
+        color: var(--cui-body-color);
+        padding: 0.3rem 0.5rem;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
         transition: all 0.2s ease;
     }
 
-    .chat-settings-btn:hover {
+    .header-icon-btn:hover {
         background: var(--cui-tertiary-bg);
         border-color: var(--ypf-blue);
     }
 
-    /* Settings dropdown content */
+    /* Settings dropdown */
+    .chat-settings-wrapper {
+        position: relative;
+    }
+
     .chat-settings-dropdown {
         position: absolute;
         top: 100%;
@@ -241,7 +310,7 @@
         border: 1px solid var(--cui-border-color);
         border-radius: 0.5rem;
         padding: 0.75rem;
-        min-width: 280px;
+        min-width: 260px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         z-index: 1000;
         display: none;
@@ -249,10 +318,6 @@
 
     .chat-settings-dropdown.show {
         display: block;
-    }
-
-    .chat-settings-wrapper {
-        position: relative;
     }
 
     .settings-group {
@@ -303,41 +368,6 @@
         padding: 0.125rem 0.5rem;
         border-radius: 0.25rem;
         font-family: monospace;
-    }
-
-    /* Stats compactas en fila 2 */
-    .chat-stats {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-    }
-
-    .chat-stat {
-        display: flex;
-        align-items: center;
-        gap: 0.35rem;
-        padding: 0.25rem 0.5rem;
-        background: var(--cui-secondary-bg);
-        border-radius: 0.375rem;
-        font-size: 0.75rem;
-    }
-
-    .chat-stat-value {
-        font-weight: 600;
-        color: var(--ypf-blue);
-    }
-
-    .chat-stat-label {
-        color: var(--cui-secondary-color);
-        font-size: 0.65rem;
-        text-transform: uppercase;
-    }
-
-    .chat-stat-divider {
-        width: 1px;
-        height: 1rem;
-        background: var(--cui-border-color);
-        margin: 0 0.25rem;
     }
 
     /* Contenedor de mensajes */
@@ -694,54 +724,6 @@
         min-width: 36px;
     }
 
-    /* TTS Debug button */
-    .tts-debug-btn {
-        background: transparent;
-        border: 1px solid var(--cui-border-color);
-        color: var(--cui-secondary-color);
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.375rem;
-        cursor: pointer;
-        font-size: 0.75rem;
-        transition: all 0.2s ease;
-    }
-
-    .tts-debug-btn:hover {
-        background: var(--cui-secondary-bg);
-        color: var(--cui-body-color);
-    }
-
-    /* TTS Debug logs */
-    .tts-debug-logs {
-        max-height: 400px;
-        overflow-y: auto;
-        font-family: monospace;
-        font-size: 0.8125rem;
-        background: #1e1e1e;
-        color: #d4d4d4;
-        padding: 1rem;
-        border-radius: 0.5rem;
-    }
-
-    .tts-log-entry {
-        padding: 0.25rem 0;
-        border-bottom: 1px solid #333;
-    }
-
-    .tts-log-entry:last-child {
-        border-bottom: none;
-    }
-
-    .tts-log-time {
-        color: #888;
-        margin-right: 0.5rem;
-    }
-
-    .tts-log-info { color: #4fc3f7; }
-    .tts-log-success { color: #81c784; }
-    .tts-log-warning { color: #ffb74d; }
-    .tts-log-error { color: #e57373; }
-
     .voice-status.speaking {
         color: var(--cui-success);
     }
@@ -819,49 +801,22 @@
             width: 240px;
             min-width: 240px;
         }
-
-        .chat-header-row:last-child {
-            flex-wrap: wrap;
-        }
     }
 
     @media (max-width: 768px) {
         .chat-wrapper {
             flex-direction: column;
-            height: calc(100vh - 160px);
+            height: 100vh;
         }
 
         .chat-sidebar {
             width: 100%;
             min-width: 100%;
-            max-height: 200px;
+            max-height: 180px;
         }
 
         .chat-header {
-            padding: 0.5rem 0.75rem;
-        }
-
-        .chat-header-info h2 {
-            font-size: 0.9rem;
-        }
-
-        .chat-stats {
-            display: none;
-        }
-
-        .chat-header-row:last-child {
-            justify-content: flex-end;
-        }
-
-        .chat-settings-dropdown {
-            right: -0.5rem;
-            min-width: 250px;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .chat-header-agent .badge-model {
-            display: none;
+            padding: 0.35rem 0.75rem;
         }
     }
 
@@ -1099,61 +1054,65 @@
     {{-- Main Chat --}}
     <div class="chat-main">
         <div class="chat-header" id="chatHeader" style="display: none;">
-            {{-- Fila 1: Título + Badge --}}
-            <div class="chat-header-row">
-                <div class="chat-header-info">
-                    <h2 id="chatTitle">Conversacion</h2>
-                    <div class="chat-header-agent">
-                        <span class="badge" id="chatAgentBadge">
-                            <i class="fas fa-robot me-1"></i>
-                            <span id="chatAgent">-</span>
-                        </span>
-                        <span class="badge badge-model" id="chatModelBadge" style="display: none;">
-                            <i class="fas fa-microchip me-1"></i>
-                            <span id="chatModel">-</span>
-                        </span>
-                    </div>
+            <div class="chat-header-info">
+                <h2 id="chatTitle">Conversacion</h2>
+                <div class="chat-header-agent">
+                    <span class="badge" id="chatAgentBadge">
+                        <i class="fas fa-robot me-1"></i>
+                        <span id="chatAgent">-</span>
+                    </span>
+                    <span class="badge badge-model" id="chatModelBadge" style="display: none;">
+                        <i class="fas fa-microchip me-1"></i>
+                        <span id="chatModel">-</span>
+                    </span>
                 </div>
             </div>
 
-            {{-- Fila 2: Stats + Settings --}}
-            <div class="chat-header-row">
-                <div class="chat-stats">
-                    <div class="chat-stat" title="Tokens usados">
-                        <span class="chat-stat-value" id="chatTokens">0</span>
-                        <span class="chat-stat-label">tokens</span>
+            <div class="chat-header-actions">
+                {{-- Cost summary badge + stats popover --}}
+                <div class="chat-settings-wrapper">
+                    <div class="chat-cost-badge" onclick="toggleStatsDropdown()" title="Ver costos detallados">
+                        <span class="cost-label"><i class="fas fa-coins"></i></span>
+                        <span class="cost-value">U$<span id="chatTotalUsd">0.00</span></span>
                     </div>
-                    <div class="chat-stat-divider"></div>
-                    <div class="chat-stat" title="Costo del modelo de lenguaje">
-                        <span class="chat-stat-label">LLM</span>
-                        <span class="chat-stat-value">$<span id="chatLlmCost">0.00</span></span>
-                    </div>
-                    <div class="chat-stat" title="Costo de Text-to-Speech">
-                        <span class="chat-stat-label">TTS</span>
-                        <span class="chat-stat-value">$<span id="chatTtsCost">0.00</span></span>
-                    </div>
-                    <div class="chat-stat" title="Costo de Speech-to-Text">
-                        <span class="chat-stat-label">STT</span>
-                        <span class="chat-stat-value">$<span id="chatSttCost">0.00</span></span>
-                    </div>
-                    <div class="chat-stat" id="chatEvalStat" title="Costo de evaluacion" style="display: none;">
-                        <span class="chat-stat-label">EVAL</span>
-                        <span class="chat-stat-value">$<span id="chatEvalCost">0.00</span></span>
-                    </div>
-                    <div class="chat-stat-divider"></div>
-                    <div class="chat-stat" title="Costo total (USD + ARS)">
-                        <span class="chat-stat-label">Total</span>
-                        <span class="chat-stat-value">U$<span id="chatTotalUsd">0.00</span></span>
-                        <span style="color: var(--cui-secondary-color); font-size: 0.65rem; margin: 0 0.15rem;">|</span>
-                        <span class="chat-stat-value" style="color: var(--cui-success);">$<span id="chatTotalArs">0</span></span>
+                    <div class="stats-dropdown" id="statsDropdown">
+                        <div class="stats-row">
+                            <span class="stats-row-label"><i class="fas fa-microchip me-1"></i>Tokens</span>
+                            <span class="stats-row-value" id="chatTokens">0</span>
+                        </div>
+                        <div class="stats-row-divider"></div>
+                        <div class="stats-row">
+                            <span class="stats-row-label">LLM</span>
+                            <span class="stats-row-value">$<span id="chatLlmCost">0.00</span></span>
+                        </div>
+                        <div class="stats-row">
+                            <span class="stats-row-label">TTS</span>
+                            <span class="stats-row-value">$<span id="chatTtsCost">0.00</span></span>
+                        </div>
+                        <div class="stats-row">
+                            <span class="stats-row-label">STT</span>
+                            <span class="stats-row-value">$<span id="chatSttCost">0.00</span></span>
+                        </div>
+                        <div class="stats-row" id="chatEvalStat" style="display: none;">
+                            <span class="stats-row-label">Eval</span>
+                            <span class="stats-row-value">$<span id="chatEvalCost">0.00</span></span>
+                        </div>
+                        <div class="stats-row-divider"></div>
+                        <div class="stats-row">
+                            <span class="stats-row-label"><strong>Total USD</strong></span>
+                            <span class="stats-row-value"><strong>U$<span id="chatTotalUsdDetail">0.00</span></strong></span>
+                        </div>
+                        <div class="stats-row">
+                            <span class="stats-row-label"><strong>Total ARS</strong></span>
+                            <span class="stats-row-value" style="color: var(--cui-success);"><strong>$<span id="chatTotalArs">0</span></strong></span>
+                        </div>
                     </div>
                 </div>
 
-                {{-- Settings dropdown --}}
+                {{-- Voice settings --}}
                 <div class="chat-settings-wrapper">
-                    <button class="chat-settings-btn" onclick="toggleSettingsDropdown()" title="Configuracion de voz">
+                    <button class="header-icon-btn" onclick="toggleSettingsDropdown()" title="Configuracion de voz">
                         <i class="fas fa-sliders-h"></i>
-                        <span class="d-none d-sm-inline">Voz</span>
                     </button>
                     <div class="chat-settings-dropdown" id="settingsDropdown">
                         <div class="settings-group">
@@ -1240,9 +1199,6 @@
 
             {{-- TTS Toggle --}}
             <div style="display: flex; justify-content: flex-end; margin-top: 0.5rem; gap: 1rem;">
-                <button class="tts-debug-btn" id="ttsDebugBtn" onclick="openTTSDebugModal()" title="Ver logs de TTS">
-                    <i class="fas fa-bug"></i>
-                </button>
                 <label class="tts-toggle active" id="ttsToggle" title="Activar/desactivar lectura automatica de respuestas">
                     <input type="checkbox" id="ttsEnabled" checked>
                     <i class="fas fa-volume-up toggle-icon"></i>
@@ -1272,43 +1228,6 @@
     </div>
 </div>
 
-{{-- TTS Debug Modal --}}
-<div class="modal fade" id="ttsDebugModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="fas fa-bug me-2"></i>TTS Debug Log</h5>
-                <button type="button" class="btn-close" data-coreui-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <strong>Estado actual:</strong>
-                    <div id="ttsDebugStatus" class="mt-2 p-2 bg-light rounded">
-                        <div><strong>TTS Soportado:</strong> <span id="debugTtsSupported">-</span></div>
-                        <div><strong>TTS Habilitado:</strong> <span id="debugTtsEnabled">-</span></div>
-                        <div><strong>Voces disponibles:</strong> <span id="debugVoicesCount">-</span></div>
-                        <div><strong>Voz seleccionada:</strong> <span id="debugSelectedVoice">-</span></div>
-                        <div><strong>speechSynthesis.speaking:</strong> <span id="debugIsSpeaking">-</span></div>
-                        <div><strong>speechSynthesis.pending:</strong> <span id="debugIsPending">-</span></div>
-                        <div><strong>speechSynthesis.paused:</strong> <span id="debugIsPaused">-</span></div>
-                    </div>
-                </div>
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <strong>Logs:</strong>
-                    <div>
-                        <button class="btn btn-sm btn-outline-primary me-2" onclick="testTTSFromModal()">
-                            <i class="fas fa-play me-1"></i>Test TTS
-                        </button>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="clearTTSLogs()">
-                            <i class="fas fa-trash me-1"></i>Limpiar
-                        </button>
-                    </div>
-                </div>
-                <div id="ttsDebugLogs" class="tts-debug-logs"></div>
-            </div>
-        </div>
-    </div>
-</div>
 {{-- Evaluation Modal --}}
 <div class="modal fade" id="evaluationModal" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -1365,7 +1284,13 @@ function updateTotalCost() {
     const eval_ = parseFloat(document.getElementById('chatEvalCost').textContent) || 0;
     const totalUsd = llm + tts + stt + eval_;
     document.getElementById('chatTotalUsd').textContent = totalUsd.toFixed(4);
+    const detailEl = document.getElementById('chatTotalUsdDetail');
+    if (detailEl) detailEl.textContent = totalUsd.toFixed(4);
     document.getElementById('chatTotalArs').textContent = (totalUsd * USD_TO_ARS).toFixed(2);
+}
+
+function toggleStatsDropdown() {
+    document.getElementById('statsDropdown')?.classList.toggle('show');
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -1544,7 +1469,7 @@ async function selectChat(chatId) {
             // Eval cost from evaluation relation
             if (chatData.data.evaluation && chatData.data.evaluation.cost) {
                 document.getElementById('chatEvalCost').textContent = parseFloat(chatData.data.evaluation.cost).toFixed(4);
-                document.getElementById('chatEvalStat').style.display = 'flex';
+                document.getElementById('chatEvalStat').style.display = '';
             } else {
                 document.getElementById('chatEvalCost').textContent = '0.00';
                 document.getElementById('chatEvalStat').style.display = 'none';
@@ -1598,6 +1523,8 @@ function clearChatUI() {
     document.getElementById('chatEvalCost').textContent = '0.00';
     document.getElementById('chatEvalStat').style.display = 'none';
     document.getElementById('chatTotalUsd').textContent = '0.00';
+    const detailEl = document.getElementById('chatTotalUsdDetail');
+    if (detailEl) detailEl.textContent = '0.00';
     document.getElementById('chatTotalArs').textContent = '0';
     showInputPanel();
 }
@@ -2294,136 +2221,11 @@ function stopSpeaking() {
 }
 
 // ===========================================
-// TTS DEBUG MODAL
+// TTS Logging (console only)
 // ===========================================
 
-let ttsLogs = [];
-
 function ttsLog(message, type = 'info') {
-    const now = new Date();
-    const time = now.toLocaleTimeString('es-AR', { hour12: false }) + '.' + now.getMilliseconds().toString().padStart(3, '0');
-    const entry = { time, message, type };
-    ttsLogs.push(entry);
-
-    // Keep only last 100 logs
-    if (ttsLogs.length > 100) {
-        ttsLogs.shift();
-    }
-
-    // Also log to console
     console.log(`[TTS ${type.toUpperCase()}] ${message}`);
-
-    // Update modal if open
-    updateTTSDebugLogs();
-}
-
-function updateTTSDebugLogs() {
-    const logsContainer = document.getElementById('ttsDebugLogs');
-    if (!logsContainer) return;
-
-    logsContainer.innerHTML = ttsLogs.map(log => `
-        <div class="tts-log-entry">
-            <span class="tts-log-time">${log.time}</span>
-            <span class="tts-log-${log.type}">${log.message}</span>
-        </div>
-    `).join('');
-
-    // Auto-scroll to bottom
-    logsContainer.scrollTop = logsContainer.scrollHeight;
-}
-
-function updateTTSDebugStatus() {
-    document.getElementById('debugTtsSupported').textContent = ttsSupported ? 'Si' : 'No';
-    document.getElementById('debugTtsEnabled').textContent = document.getElementById('ttsEnabled')?.checked ? 'Si' : 'No';
-    document.getElementById('debugVoicesCount').textContent = availableVoices.length;
-
-    const voice = getSpanishVoice();
-    document.getElementById('debugSelectedVoice').textContent = voice ? `${voice.name} (${voice.lang})` : 'Ninguna';
-
-    if (ttsSupported) {
-        document.getElementById('debugIsSpeaking').textContent = speechSynthesis.speaking ? 'Si' : 'No';
-        document.getElementById('debugIsPending').textContent = speechSynthesis.pending ? 'Si' : 'No';
-        document.getElementById('debugIsPaused').textContent = speechSynthesis.paused ? 'Si' : 'No';
-    }
-}
-
-function openTTSDebugModal() {
-    updateTTSDebugStatus();
-    updateTTSDebugLogs();
-
-    const modal = new coreui.Modal(document.getElementById('ttsDebugModal'));
-    modal.show();
-
-    // Update status every second while modal is open
-    const statusInterval = setInterval(updateTTSDebugStatus, 1000);
-
-    document.getElementById('ttsDebugModal').addEventListener('hidden.coreui.modal', () => {
-        clearInterval(statusInterval);
-    }, { once: true });
-}
-
-function clearTTSLogs() {
-    ttsLogs = [];
-    updateTTSDebugLogs();
-}
-
-function testTTSFromModal() {
-    ttsLog('Iniciando test manual de TTS...', 'info');
-
-    if (!ttsSupported) {
-        ttsLog('ERROR: TTS no soportado en este navegador', 'error');
-        return;
-    }
-
-    // Cancel any ongoing speech
-    if (speechSynthesis.speaking) {
-        ttsLog('Cancelando speech anterior...', 'warning');
-        speechSynthesis.cancel();
-    }
-
-    const testText = 'Hola, esto es una prueba de texto a voz.';
-    ttsLog(`Texto a reproducir: "${testText}"`, 'info');
-
-    const utterance = new SpeechSynthesisUtterance(testText);
-    utterance.lang = 'es-AR';
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-    utterance.volume = 1.0;
-
-    const voice = getSpanishVoice();
-    if (voice) {
-        utterance.voice = voice;
-        ttsLog(`Usando voz: ${voice.name} (${voice.lang})`, 'info');
-    } else {
-        ttsLog('No se encontro voz en espanol, usando default', 'warning');
-    }
-
-    utterance.onstart = () => {
-        ttsLog('EVENT: onstart - Comenzo a hablar', 'success');
-        updateTTSDebugStatus();
-    };
-
-    utterance.onend = () => {
-        ttsLog('EVENT: onend - Termino de hablar', 'success');
-        updateTTSDebugStatus();
-    };
-
-    utterance.onerror = (event) => {
-        ttsLog(`EVENT: onerror - Error: ${event.error}`, 'error');
-        updateTTSDebugStatus();
-    };
-
-    utterance.onpause = () => ttsLog('EVENT: onpause - Pausado', 'warning');
-    utterance.onresume = () => ttsLog('EVENT: onresume - Resumido', 'info');
-
-    ttsLog('Llamando speechSynthesis.speak()...', 'info');
-    speechSynthesis.speak(utterance);
-    ttsLog(`Estado despues de speak(): speaking=${speechSynthesis.speaking}, pending=${speechSynthesis.pending}`, 'info');
-}
-
-// Test function - run from console: testTTS()
-function testTTS() {
-    testTTSFromModal();
 }
 
 // ===========================================
@@ -2454,12 +2256,17 @@ function initSpeechProviders() {
     // Mostrar/ocultar selector de voz
     updateVoiceSelectorVisibility();
 
-    // Cerrar dropdown al hacer click fuera
+    // Cerrar dropdowns al hacer click fuera
     document.addEventListener('click', function(e) {
         const dropdown = document.getElementById('settingsDropdown');
-        const btn = document.querySelector('.chat-settings-btn');
+        const btn = document.querySelector('.header-icon-btn');
         if (dropdown && btn && !dropdown.contains(e.target) && !btn.contains(e.target)) {
             dropdown.classList.remove('show');
+        }
+        const statsDD = document.getElementById('statsDropdown');
+        const costBadge = document.querySelector('.chat-cost-badge');
+        if (statsDD && costBadge && !statsDD.contains(e.target) && !costBadge.contains(e.target)) {
+            statsDD.classList.remove('show');
         }
     });
 
@@ -2802,7 +2609,7 @@ async function triggerEvaluation(chatId) {
             // Update eval cost in header
             if (data.data.cost) {
                 document.getElementById('chatEvalCost').textContent = parseFloat(data.data.cost).toFixed(4);
-                document.getElementById('chatEvalStat').style.display = 'flex';
+                document.getElementById('chatEvalStat').style.display = '';
                 updateTotalCost();
             }
 

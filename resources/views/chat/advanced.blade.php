@@ -2,10 +2,6 @@
 
 @section('title', 'Chat Advanced - YPF Chat Station')
 
-@section('breadcrumb')
-<li class="breadcrumb-item active">Chat Advanced</li>
-@endsection
-
 @push('css')
 <style>
     :root {
@@ -14,15 +10,22 @@
         --ypf-yellow: #ffd100;
     }
 
-    /* Layout principal del chat */
+    /* === FULL-HEIGHT: ocultar header, footer, breadcrumb del master === */
+    .header { display: none !important; }
+    .footer { display: none !important; }
+    .body { padding: 0 !important; }
+    .body > .container-lg { max-width: 100% !important; padding: 0 !important; }
+    .wrapper { min-height: 100vh !important; }
+
+    /* Layout principal del chat - ocupa toda la ventana */
     .chat-wrapper {
         display: flex;
-        height: calc(100vh - 180px);
-        margin: -1rem -1.5rem;
-        border-radius: 0.5rem;
+        height: 100vh;
+        margin: 0;
+        border-radius: 0;
         overflow: hidden;
         background: var(--cui-body-bg);
-        border: 1px solid var(--cui-border-color);
+        border: none;
     }
 
     /* Sidebar (columna izquierda) */
@@ -159,35 +162,29 @@
         overflow: hidden;
     }
 
-    /* Header del chat */
+    /* Header del chat - 1 sola fila compacta */
     .chat-header {
-        padding: 0.75rem 1.25rem;
+        padding: 0.4rem 1rem;
         background: var(--cui-tertiary-bg);
         border-bottom: 1px solid var(--cui-border-color);
         display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        flex-shrink: 0;
-    }
-
-    .chat-header-row {
-        display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 1rem;
+        gap: 0.75rem;
+        flex-shrink: 0;
     }
 
     .chat-header-info {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
-        flex-wrap: wrap;
+        gap: 0.5rem;
         min-width: 0;
+        flex: 1;
     }
 
     .chat-header-info h2 {
         margin: 0;
-        font-size: 1rem;
+        font-size: 0.9rem;
         font-weight: 600;
         color: var(--cui-body-color);
         white-space: nowrap;
@@ -195,80 +192,114 @@
         text-overflow: ellipsis;
     }
 
-    .chat-header-agent {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
     .chat-header-agent .badge {
         background: var(--cui-success);
         font-weight: 500;
-        padding: 0.2rem 0.5rem;
-        font-size: 0.7rem;
+        padding: 0.15rem 0.4rem;
+        font-size: 0.65rem;
     }
 
     .chat-header-agent .badge-model {
         background: var(--cui-info);
     }
 
-    /* Stats */
-    .chat-stats {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-    }
-
-    .chat-stat {
+    .chat-header-actions {
         display: flex;
         align-items: center;
         gap: 0.35rem;
-        padding: 0.25rem 0.5rem;
-        background: var(--cui-secondary-bg);
-        border-radius: 0.375rem;
-        font-size: 0.75rem;
+        flex-shrink: 0;
     }
 
-    .chat-stat-value {
+    /* Total cost inline badge */
+    .chat-cost-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.2rem 0.5rem;
+        background: var(--cui-secondary-bg);
+        border-radius: 0.375rem;
+        font-size: 0.7rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+
+    .chat-cost-badge:hover {
+        border-color: var(--ypf-blue);
+    }
+
+    .chat-cost-badge .cost-value {
         font-weight: 600;
         color: var(--ypf-blue);
     }
 
-    .chat-stat-label {
+    .chat-cost-badge .cost-label {
         color: var(--cui-secondary-color);
-        font-size: 0.65rem;
-        text-transform: uppercase;
     }
 
-    .chat-stat-divider {
-        width: 1px;
-        height: 1rem;
-        background: var(--cui-border-color);
-        margin: 0 0.25rem;
+    /* Stats popover/dropdown */
+    .stats-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: var(--cui-body-bg);
+        border: 1px solid var(--cui-border-color);
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        min-width: 220px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+        display: none;
+    }
+
+    .stats-dropdown.show {
+        display: block;
+    }
+
+    .stats-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.25rem 0;
+        font-size: 0.75rem;
+    }
+
+    .stats-row-label {
+        color: var(--cui-secondary-color);
+    }
+
+    .stats-row-value {
+        font-weight: 600;
+        color: var(--ypf-blue);
+    }
+
+    .stats-row-divider {
+        border-top: 1px solid var(--cui-border-color);
+        margin: 0.35rem 0;
+    }
+
+    /* Header icon buttons */
+    .header-icon-btn {
+        background: var(--cui-secondary-bg);
+        border: 1px solid var(--cui-border-color);
+        color: var(--cui-body-color);
+        padding: 0.3rem 0.5rem;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        transition: all 0.2s ease;
+    }
+
+    .header-icon-btn:hover {
+        background: var(--cui-tertiary-bg);
+        border-color: var(--ypf-blue);
     }
 
     /* Settings dropdown */
     .chat-settings-wrapper {
         position: relative;
-    }
-
-    .chat-settings-btn {
-        background: var(--cui-secondary-bg);
-        border: 1px solid var(--cui-border-color);
-        color: var(--cui-body-color);
-        padding: 0.35rem 0.6rem;
-        border-radius: 0.375rem;
-        cursor: pointer;
-        font-size: 0.8rem;
-        display: flex;
-        align-items: center;
-        gap: 0.35rem;
-        transition: all 0.2s ease;
-    }
-
-    .chat-settings-btn:hover {
-        background: var(--cui-tertiary-bg);
-        border-color: var(--ypf-blue);
     }
 
     .chat-settings-dropdown {
@@ -279,7 +310,7 @@
         border: 1px solid var(--cui-border-color);
         border-radius: 0.5rem;
         padding: 0.75rem;
-        min-width: 280px;
+        min-width: 260px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         z-index: 1000;
         display: none;
@@ -390,16 +421,16 @@
 
     .scene-panel-body {
         display: flex;
-        gap: 1.25rem;
-        padding: 0 1.25rem 1rem;
+        gap: 1rem;
+        padding: 0.25rem 1.25rem 0.75rem;
         align-items: flex-start;
     }
 
     .scene-image-container {
         flex-shrink: 0;
-        width: 200px;
-        height: 200px;
-        border-radius: 0.75rem;
+        width: 120px;
+        height: 120px;
+        border-radius: 0.5rem;
         overflow: hidden;
         border: 2px solid var(--cui-border-color);
         background: var(--cui-secondary-bg);
@@ -460,38 +491,35 @@
     }
 
     /* ============================
-       Action Bar
+       Action Buttons (inside input area)
        ============================ */
-    .action-bar {
+    .action-buttons {
         display: flex;
         align-items: center;
-        justify-content: center;
-        gap: 0.75rem;
-        padding: 0.5rem 1.25rem;
-        background: var(--cui-tertiary-bg);
-        border-top: 1px solid var(--cui-border-color);
-        flex-shrink: 0;
+        gap: 0.35rem;
+        max-width: 900px;
+        margin: 0 auto 0.4rem;
     }
 
-    .action-bar-label {
-        font-size: 0.7rem;
+    .action-buttons-label {
+        font-size: 0.6rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         color: var(--cui-secondary-color);
         font-weight: 600;
-        margin-right: 0.25rem;
+        margin-right: 0.15rem;
     }
 
     .action-btn {
         display: flex;
         align-items: center;
-        gap: 0.4rem;
-        padding: 0.4rem 0.85rem;
-        border-radius: 0.5rem;
+        gap: 0.3rem;
+        padding: 0.25rem 0.6rem;
+        border-radius: 0.375rem;
         border: 1px solid var(--cui-border-color);
         background: var(--cui-body-bg);
         color: var(--cui-body-color);
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         cursor: pointer;
         transition: all 0.2s ease;
         font-weight: 500;
@@ -509,7 +537,7 @@
     }
 
     .action-btn i {
-        font-size: 0.85rem;
+        font-size: 0.75rem;
     }
 
     /* ============================
@@ -1213,34 +1241,26 @@
             min-width: 240px;
         }
 
-        .scene-panel-body {
-            flex-direction: column;
-        }
-
         .scene-image-container {
-            width: 100%;
-            height: 150px;
+            width: 100px;
+            height: 100px;
         }
     }
 
     @media (max-width: 768px) {
         .chat-wrapper {
             flex-direction: column;
-            height: calc(100vh - 160px);
+            height: 100vh;
         }
 
         .chat-sidebar {
             width: 100%;
             min-width: 100%;
-            max-height: 200px;
+            max-height: 180px;
         }
 
         .chat-header {
-            padding: 0.5rem 0.75rem;
-        }
-
-        .chat-stats {
-            display: none;
+            padding: 0.35rem 0.75rem;
         }
 
         .scene-panel-body {
@@ -1249,7 +1269,11 @@
 
         .scene-image-container {
             width: 100%;
-            height: 120px;
+            height: 100px;
+        }
+
+        .action-btn span {
+            display: none;
         }
     }
 </style>
@@ -1276,65 +1300,69 @@
     {{-- Main Chat --}}
     <div class="chat-main">
         <div class="chat-header" id="chatHeader" style="display: none;">
-            {{-- Fila 1: Titulo + Badge --}}
-            <div class="chat-header-row">
-                <div class="chat-header-info">
-                    <h2 id="chatTitle">Conversacion</h2>
-                    <div class="chat-header-agent">
-                        <span class="badge" id="chatAgentBadge">
-                            <i class="fas fa-robot me-1"></i>
-                            <span id="chatAgent">-</span>
-                        </span>
-                        <span class="badge badge-model" id="chatModelBadge" style="display: none;">
-                            <i class="fas fa-microchip me-1"></i>
-                            <span id="chatModel">-</span>
-                        </span>
-                    </div>
+            <div class="chat-header-info">
+                <h2 id="chatTitle">Conversacion</h2>
+                <div class="chat-header-agent">
+                    <span class="badge" id="chatAgentBadge">
+                        <i class="fas fa-robot me-1"></i>
+                        <span id="chatAgent">-</span>
+                    </span>
+                    <span class="badge badge-model" id="chatModelBadge" style="display: none;">
+                        <i class="fas fa-microchip me-1"></i>
+                        <span id="chatModel">-</span>
+                    </span>
                 </div>
             </div>
 
-            {{-- Fila 2: Stats + Settings --}}
-            <div class="chat-header-row">
-                <div class="chat-stats">
-                    <div class="chat-stat" title="Tokens usados">
-                        <span class="chat-stat-value" id="chatTokens">0</span>
-                        <span class="chat-stat-label">tokens</span>
+            <div class="chat-header-actions">
+                {{-- Cost summary badge + stats popover --}}
+                <div class="chat-settings-wrapper">
+                    <div class="chat-cost-badge" onclick="toggleStatsDropdown()" title="Ver costos detallados">
+                        <span class="cost-label"><i class="fas fa-coins"></i></span>
+                        <span class="cost-value">U$<span id="chatTotalUsd">0.00</span></span>
                     </div>
-                    <div class="chat-stat-divider"></div>
-                    <div class="chat-stat" title="Costo del modelo de lenguaje">
-                        <span class="chat-stat-label">LLM</span>
-                        <span class="chat-stat-value">$<span id="chatLlmCost">0.00</span></span>
-                    </div>
-                    <div class="chat-stat" title="Costo de Text-to-Speech">
-                        <span class="chat-stat-label">TTS</span>
-                        <span class="chat-stat-value">$<span id="chatTtsCost">0.00</span></span>
-                    </div>
-                    <div class="chat-stat" title="Costo de Speech-to-Text">
-                        <span class="chat-stat-label">STT</span>
-                        <span class="chat-stat-value">$<span id="chatSttCost">0.00</span></span>
-                    </div>
-                    <div class="chat-stat" title="Costo de imagen DALL-E">
-                        <span class="chat-stat-label">IMG</span>
-                        <span class="chat-stat-value">$<span id="chatImageCost">0.00</span></span>
-                    </div>
-                    <div class="chat-stat" id="chatEvalStat" title="Costo de evaluacion" style="display: none;">
-                        <span class="chat-stat-label">EVAL</span>
-                        <span class="chat-stat-value">$<span id="chatEvalCost">0.00</span></span>
-                    </div>
-                    <div class="chat-stat-divider"></div>
-                    <div class="chat-stat" title="Costo total (USD + ARS)">
-                        <span class="chat-stat-label">Total</span>
-                        <span class="chat-stat-value">U$<span id="chatTotalUsd">0.00</span></span>
-                        <span style="color: var(--cui-secondary-color); font-size: 0.65rem; margin: 0 0.15rem;">|</span>
-                        <span class="chat-stat-value" style="color: var(--cui-success);">$<span id="chatTotalArs">0</span></span>
+                    <div class="stats-dropdown" id="statsDropdown">
+                        <div class="stats-row">
+                            <span class="stats-row-label"><i class="fas fa-microchip me-1"></i>Tokens</span>
+                            <span class="stats-row-value" id="chatTokens">0</span>
+                        </div>
+                        <div class="stats-row-divider"></div>
+                        <div class="stats-row">
+                            <span class="stats-row-label">LLM</span>
+                            <span class="stats-row-value">$<span id="chatLlmCost">0.00</span></span>
+                        </div>
+                        <div class="stats-row">
+                            <span class="stats-row-label">TTS</span>
+                            <span class="stats-row-value">$<span id="chatTtsCost">0.00</span></span>
+                        </div>
+                        <div class="stats-row">
+                            <span class="stats-row-label">STT</span>
+                            <span class="stats-row-value">$<span id="chatSttCost">0.00</span></span>
+                        </div>
+                        <div class="stats-row">
+                            <span class="stats-row-label">Imagen</span>
+                            <span class="stats-row-value">$<span id="chatImageCost">0.00</span></span>
+                        </div>
+                        <div class="stats-row" id="chatEvalStat" style="display: none;">
+                            <span class="stats-row-label">Eval</span>
+                            <span class="stats-row-value">$<span id="chatEvalCost">0.00</span></span>
+                        </div>
+                        <div class="stats-row-divider"></div>
+                        <div class="stats-row">
+                            <span class="stats-row-label"><strong>Total USD</strong></span>
+                            <span class="stats-row-value"><strong>U$<span id="chatTotalUsdDetail">0.00</span></strong></span>
+                        </div>
+                        <div class="stats-row">
+                            <span class="stats-row-label"><strong>Total ARS</strong></span>
+                            <span class="stats-row-value" style="color: var(--cui-success);"><strong>$<span id="chatTotalArs">0</span></strong></span>
+                        </div>
                     </div>
                 </div>
 
-                {{-- Settings dropdown --}}
+                {{-- Voice settings --}}
                 <div class="chat-settings-wrapper">
-                    <button class="chat-settings-btn" onclick="toggleSettingsDropdown()" title="Configuracion de voz">
+                    <button class="header-icon-btn" onclick="toggleSettingsDropdown()" title="Configuracion de voz">
                         <i class="fas fa-sliders-h"></i>
-                        <span class="d-none d-sm-inline">Voz</span>
                     </button>
                     <div class="chat-settings-dropdown" id="settingsDropdown">
                         <div class="settings-group">
@@ -1405,24 +1433,24 @@
             </div>
         </div>
 
-        {{-- Action Bar --}}
-        <div class="action-bar" id="actionBar" style="display: none;">
-            <span class="action-bar-label">Acciones:</span>
-            <button class="action-btn" id="actionOpenCap" onclick="openFuelCapModal()" title="Abrir tapa de combustible">
-                <i class="fas fa-gas-pump"></i>
-                <span>Abrir tapa</span>
-            </button>
-            <button class="action-btn" id="actionFuel" onclick="executeAction('cargar_combustible')" title="Cargar combustible">
-                <i class="fas fa-fill-drip"></i>
-                <span>Cargar combustible</span>
-            </button>
-            <button class="action-btn" id="actionCharge" onclick="executeAction('cobrar')" title="Cobrar">
-                <i class="fas fa-cash-register"></i>
-                <span>Cobrar</span>
-            </button>
-        </div>
-
         <div class="input-container" id="inputContainer" style="display: none;">
+            {{-- Action Buttons (inline above input) --}}
+            <div class="action-buttons" id="actionBar" style="display: none;">
+                <span class="action-buttons-label">Acciones:</span>
+                <button class="action-btn" id="actionOpenCap" onclick="openFuelCapModal()" title="Abrir tapa de combustible">
+                    <i class="fas fa-gas-pump"></i>
+                    <span>Abrir tapa</span>
+                </button>
+                <button class="action-btn" id="actionFuel" onclick="executeAction('cargar_combustible')" title="Cargar combustible">
+                    <i class="fas fa-fill-drip"></i>
+                    <span>Cargar</span>
+                </button>
+                <button class="action-btn" id="actionCharge" onclick="executeAction('cobrar')" title="Cobrar">
+                    <i class="fas fa-cash-register"></i>
+                    <span>Cobrar</span>
+                </button>
+            </div>
+
             {{-- Voice warnings and status --}}
             <div class="voice-warning" id="voiceWarning">
                 <i class="fas fa-exclamation-triangle"></i>
@@ -1575,7 +1603,13 @@ function updateTotalCost() {
     const eval_ = parseFloat(document.getElementById('chatEvalCost').textContent) || 0;
     const totalUsd = llm + tts + stt + img + eval_;
     document.getElementById('chatTotalUsd').textContent = totalUsd.toFixed(4);
+    const detailEl = document.getElementById('chatTotalUsdDetail');
+    if (detailEl) detailEl.textContent = totalUsd.toFixed(4);
     document.getElementById('chatTotalArs').textContent = (totalUsd * USD_TO_ARS).toFixed(2);
+}
+
+function toggleStatsDropdown() {
+    document.getElementById('statsDropdown')?.classList.toggle('show');
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -1843,6 +1877,8 @@ function clearChatUI() {
     document.getElementById('chatEvalCost').textContent = '0.00';
     document.getElementById('chatEvalStat').style.display = 'none';
     document.getElementById('chatTotalUsd').textContent = '0.00';
+    const detailEl = document.getElementById('chatTotalUsdDetail');
+    if (detailEl) detailEl.textContent = '0.00';
     document.getElementById('chatTotalArs').textContent = '0';
     document.getElementById('scenePanel').style.display = 'none';
     document.getElementById('actionBar').style.display = 'none';
@@ -1857,7 +1893,7 @@ function clearChatUI() {
 function renderScenePanel(chat) {
     const panel = document.getElementById('scenePanel');
     panel.style.display = 'block';
-    panel.classList.remove('collapsed');
+    panel.classList.add('collapsed');
 
     // Image
     const imageContainer = document.getElementById('sceneImageContainer');
@@ -2093,7 +2129,6 @@ async function sendMessage() {
             // Check if conversation ended
             if (data.data.conversation_ended) {
                 showFinishedPanel(false);
-                document.getElementById('actionBar').style.display = 'none';
                 triggerEvaluation(currentChatId);
             }
 
@@ -2202,7 +2237,6 @@ async function deleteChat(event, chatId) {
                 document.getElementById('chatHeader').style.display = 'none';
                 document.getElementById('inputContainer').style.display = 'none';
                 document.getElementById('scenePanel').style.display = 'none';
-                document.getElementById('actionBar').style.display = 'none';
                 document.getElementById('messagesContainer').innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon"><i class="fas fa-gas-pump"></i></div>
@@ -2570,10 +2604,17 @@ function initSpeechProviders() {
     updateVoiceSelectorVisibility();
 
     document.addEventListener('click', function(e) {
+        // Close voice settings dropdown
         const dropdown = document.getElementById('settingsDropdown');
-        const btn = document.querySelector('.chat-settings-btn');
+        const btn = document.querySelector('.header-icon-btn');
         if (dropdown && btn && !dropdown.contains(e.target) && !btn.contains(e.target)) {
             dropdown.classList.remove('show');
+        }
+        // Close stats dropdown
+        const statsDropdown = document.getElementById('statsDropdown');
+        const costBadge = document.querySelector('.chat-cost-badge');
+        if (statsDropdown && costBadge && !statsDropdown.contains(e.target) && !costBadge.contains(e.target)) {
+            statsDropdown.classList.remove('show');
         }
     });
 }
@@ -2748,7 +2789,6 @@ let finishedChatHasEvaluation = false;
 function showFinishedPanel(hasEvaluation) {
     finishedChatHasEvaluation = hasEvaluation;
     document.getElementById('inputContainer').style.display = 'none';
-    document.getElementById('actionBar').style.display = 'none';
     document.getElementById('finishedPanel').style.display = 'block';
 
     const btnText = document.getElementById('finishedEvalBtnText');
