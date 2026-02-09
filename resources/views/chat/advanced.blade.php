@@ -625,6 +625,35 @@
         border-radius: 0.75rem;
     }
 
+    .scene-inline-image {
+        width: 100%;
+        max-width: 360px;
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+
+    .scene-inline-image:hover {
+        opacity: 0.85;
+    }
+
+    .scene-image-container img {
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+
+    .scene-image-container img:hover {
+        opacity: 0.85;
+    }
+
+    #sceneImageModal .modal-dialog {
+        max-width: 90vw;
+    }
+
     /* Action messages */
     .message-action {
         align-self: center;
@@ -1518,6 +1547,17 @@
     </div>
 </div>
 
+{{-- Scene Image Modal --}}
+<div class="modal fade" id="sceneImageModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-transparent border-0 shadow-none">
+            <div class="modal-body p-0 text-center">
+                <img id="sceneImageModalImg" src="" alt="Escena" class="img-fluid rounded" style="max-height: 85vh; cursor: zoom-out;" onclick="closeSceneImageModal()">
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Fuel Cap Modal --}}
 <div class="modal fade" id="fuelCapModal" tabindex="-1">
     <div class="modal-dialog modal-sm modal-dialog-centered">
@@ -1591,6 +1631,7 @@
 <script>
 let currentChatId = null;
 let currentSceneData = null;
+let currentSceneImageUrl = null;
 let isLoading = false;
 let isSwitchingChat = false;
 const USD_TO_ARS = 2000;
@@ -1817,7 +1858,9 @@ async function selectChat(chatId, chatType) {
 
             updateTotalCost();
 
-            // Scene panel for advanced chats
+            // Scene data & image for advanced chats
+            currentSceneImageUrl = chat.scene_image_url || null;
+
             if (chat.scene_data) {
                 currentSceneData = chat.scene_data;
                 renderScenePanel(chat);
@@ -1862,6 +1905,7 @@ async function selectChat(chatId, chatType) {
 
 function clearChatUI() {
     document.getElementById('messagesContainer').innerHTML = '';
+    currentSceneImageUrl = null;
     const messageInput = document.getElementById('messageInput');
     messageInput.value = '';
     messageInput.style.height = 'auto';
@@ -1898,7 +1942,7 @@ function renderScenePanel(chat) {
     // Image
     const imageContainer = document.getElementById('sceneImageContainer');
     if (chat.scene_image_url) {
-        imageContainer.innerHTML = `<img src="${chat.scene_image_url}" alt="Escena" loading="lazy">`;
+        imageContainer.innerHTML = `<img src="${chat.scene_image_url}" alt="Escena" loading="lazy" style="cursor: pointer;" onclick="openSceneImageModal('${chat.scene_image_url}')">`;
     } else {
         imageContainer.innerHTML = `
             <div class="scene-image-placeholder">
@@ -2014,9 +2058,17 @@ function appendMessageToDOM(msg, container) {
             ? ''
             : `<div class="message-avatar"><i class="fas fa-${msg.role === 'human' ? 'user' : 'robot'}"></i></div>`;
 
+        // Scene image for the first system message (narration)
+        let sceneImageHtml = '';
+        if (msg.role === 'system' && currentSceneImageUrl) {
+            sceneImageHtml = `<img src="${currentSceneImageUrl}" alt="Escena" class="scene-inline-image" loading="lazy" style="cursor: pointer;" onclick="openSceneImageModal('${currentSceneImageUrl}')">`;
+            currentSceneImageUrl = null; // Only show once
+        }
+
         div.innerHTML = `
             ${avatarHtml}
             <div class="message-bubble">
+                ${sceneImageHtml}
                 <p>${escapeHtml(msg.content)}</p>
                 ${metaHtml}
             </div>
@@ -2193,6 +2245,20 @@ async function executeAction(actionType, extraData = null) {
 // ============================================
 // FUEL CAP MODAL
 // ============================================
+
+let sceneImageModalInstance = null;
+
+function openSceneImageModal(imageUrl) {
+    document.getElementById('sceneImageModalImg').src = imageUrl;
+    sceneImageModalInstance = new coreui.Modal(document.getElementById('sceneImageModal'));
+    sceneImageModalInstance.show();
+}
+
+function closeSceneImageModal() {
+    if (sceneImageModalInstance) {
+        sceneImageModalInstance.hide();
+    }
+}
 
 let fuelCapModalInstance = null;
 

@@ -69,10 +69,73 @@ class AdvancedChatService
     {
         $agentPrompt = $chat->agent->system_prompt;
 
+        // Pool of vehicles common in Argentine market to force variety
+        $vehiclePool = [
+            ['type' => 'auto', 'suggestion' => 'Volkswagen Gol Trend'],
+            ['type' => 'auto', 'suggestion' => 'Fiat Cronos'],
+            ['type' => 'auto', 'suggestion' => 'Chevrolet Onix'],
+            ['type' => 'auto', 'suggestion' => 'Peugeot 208'],
+            ['type' => 'auto', 'suggestion' => 'Renault Sandero'],
+            ['type' => 'auto', 'suggestion' => 'Ford Ka'],
+            ['type' => 'auto', 'suggestion' => 'Toyota Etios'],
+            ['type' => 'auto', 'suggestion' => 'Fiat Argo'],
+            ['type' => 'auto', 'suggestion' => 'Volkswagen Polo'],
+            ['type' => 'auto', 'suggestion' => 'Citroen C3'],
+            ['type' => 'auto', 'suggestion' => 'Nissan Versa'],
+            ['type' => 'auto', 'suggestion' => 'Chevrolet Cruze'],
+            ['type' => 'auto', 'suggestion' => 'Peugeot 2008'],
+            ['type' => 'camioneta', 'suggestion' => 'Toyota Hilux'],
+            ['type' => 'camioneta', 'suggestion' => 'Ford Ranger'],
+            ['type' => 'camioneta', 'suggestion' => 'Volkswagen Amarok'],
+            ['type' => 'camioneta', 'suggestion' => 'Fiat Toro'],
+            ['type' => 'suv', 'suggestion' => 'Ford EcoSport'],
+            ['type' => 'suv', 'suggestion' => 'Jeep Renegade'],
+            ['type' => 'suv', 'suggestion' => 'Renault Duster'],
+            ['type' => 'suv', 'suggestion' => 'Chevrolet Tracker'],
+            ['type' => 'suv', 'suggestion' => 'Hyundai Creta'],
+            ['type' => 'suv', 'suggestion' => 'Volkswagen T-Cross'],
+        ];
+
+        // Exclude vehicles used in the last 5 advanced chats
+        $recentVehicles = Chat::where('chat_type', 'advanced')
+            ->whereNotNull('scene_data')
+            ->where('id', '!=', $chat->id)
+            ->orderByDesc('id')
+            ->take(5)
+            ->pluck('scene_data')
+            ->map(fn($sd) => ($sd['vehicle']['brand'] ?? '') . ' ' . ($sd['vehicle']['model'] ?? ''))
+            ->filter()
+            ->toArray();
+
+        $availablePool = array_filter($vehiclePool, fn($v) => !in_array($v['suggestion'], $recentVehicles));
+
+        // If pool got too small (edge case), use the full pool
+        if (count($availablePool) < 3) {
+            $availablePool = $vehiclePool;
+        }
+
+        $picked = $availablePool[array_rand($availablePool)];
+        $vehicleSuggestion = $picked['suggestion'];
+        $vehicleType = $picked['type'];
+
+        $colors = ['blanco', 'negro', 'gris plata', 'rojo', 'azul', 'gris oscuro', 'verde', 'beige', 'bordo', 'celeste'];
+        $colorSuggestion = $colors[array_rand($colors)];
+
+        Log::info('Scene vehicle picked', [
+            'chat_id' => $chat->id,
+            'vehicle' => $vehicleSuggestion,
+            'color' => $colorSuggestion,
+            'type' => $vehicleType,
+            'excluded' => $recentVehicles,
+        ]);
+
         $scenePrompt = <<<PROMPT
 Eres el director de escena de una simulacion de estacion de servicio YPF.
 La personalidad del cliente es:
 {$agentPrompt}
+
+VEHICULO ASIGNADO PARA ESTA ESCENA: {$vehicleSuggestion} color {$colorSuggestion} (tipo: {$vehicleType}).
+DEBES usar EXACTAMENTE este vehiculo y color. NO lo cambies.
 
 Genera un JSON con esta estructura EXACTA (sin markdown ni bloques de codigo):
 {
@@ -95,12 +158,13 @@ Genera un JSON con esta estructura EXACTA (sin markdown ni bloques de codigo):
 }
 
 Reglas:
+- vehicle: USAR el vehiculo asignado arriba ({$vehicleSuggestion} color {$colorSuggestion}). El year debe ser razonable (2015-2025)
 - vehicle.fuel_type debe ser UNO de: INFINIA, SUPER, INFINIA_DIESEL, DIESEL_500
 - fuel_type_label es el nombre legible correspondiente: Infinia Nafta, Super, Infinia Diesel, Diesel 500
 - Un auto comun usa nafta (INFINIA o SUPER), una camioneta o vehiculo grande usa diesel (INFINIA_DIESEL o DIESEL_500)
 - narration: descripcion breve (2-3 oraciones) en tercera persona como narrador. Vehiculo que llega, persona que baja, pistas sutiles del estado de animo (MOSTRAR, no DECIR)
 - opening_line: lo que dice el cliente al playero, en espanol argentino, en personaje
-- image_prompt: en INGLES, para generar una imagen realista con DALL-E. Describe la escena en la estacion YPF con el vehiculo y la persona
+- image_prompt: en INGLES, para generar una imagen realista con DALL-E. El vehiculo y la persona son el SUJETO PRINCIPAL. Describe con detalle: marca, modelo y color exacto del vehiculo estacionado junto a un surtidor; la persona parada al lado del auto con su ropa, expresion facial y lenguaje corporal. NO menciones YPF ni ninguna marca de estacion. Ejemplo: "A red 2019 Ford EcoSport SUV parked next to a fuel pump, with a woman in her 30s wearing a business suit and sunglasses, arms crossed, looking impatient"
 
 Responde SOLO con JSON valido.
 PROMPT;
