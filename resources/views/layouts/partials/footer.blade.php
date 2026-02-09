@@ -1,10 +1,10 @@
 <footer class="footer px-4">
     <div>
-        <a href="{{ route('chat.index') }}">YPF Chat Station</a>
-        &copy; <span id="footer-year"></span>
+        {{--        Powered by&nbsp;<a href="https://woopi.com.ar/" target="_blank" rel="noopener noreferrer">Woopi</a>--}}
     </div>
     <div class="ms-auto">
-        Powered by&nbsp;<a href="https://coreui.io/" target="_blank" rel="noopener noreferrer">CoreUI</a>
+        <a href="{{ route('chat.index') }}">YPF Chat Station</a>
+        &copy; <span id="footer-year"></span>
     </div>
 </footer>
 <script>

@@ -31,11 +31,103 @@ class ChatService
 
         $chat = Chat::create([
             'agent_id' => $agent->id,
-            'title' => $agent->name . ' - ' . now()->format('d/m H:i'),
+            'title' => 'Conversacion - ' . now()->format('d/m H:i'),
             'status' => 'active',
         ]);
 
-        return $chat->load('agent');
+        $chat->load('agent');
+
+        // Generate narration + first bot message
+        try {
+            $this->generateOpeningMessages($chat);
+        } catch (Exception $e) {
+            Log::error('Error generating opening messages', [
+                'chat_id' => $chat->id,
+                'error' => $e->getMessage(),
+            ]);
+            // Fail silently: chat is created without intro
+        }
+
+        return $chat;
+    }
+
+    protected function generateOpeningMessages(Chat $chat): void
+    {
+        $agentPrompt = $chat->agent->system_prompt;
+
+        $introPrompt = <<<PROMPT
+Eres el director de escena de una simulacion de atencion en una estacion de servicio YPF.
+
+La personalidad del cliente es:
+{$agentPrompt}
+
+Genera DOS cosas:
+
+1. NARRACION: Descripcion breve (2-3 oraciones) en tercera persona, como narrador.
+   - Vehiculo que llega (marca, modelo, color inventados)
+   - Persona que baja (genero, edad aprox, apariencia)
+   - Pistas sutiles del estado de animo (MOSTRAR, no DECIR — no uses palabras como "apurado", "enojado", "indeciso", etc.)
+
+2. PRIMERA_LINEA: Lo que dice el cliente al playero, en espanol argentino, en personaje.
+
+Responde SOLO con JSON valido, sin markdown ni bloques de codigo:
+{"narration": "...", "opening_line": "..."}
+PROMPT;
+
+        $response = $this->aiProvider->chat([], $introPrompt);
+
+        $content = trim($response['content']);
+        $parsed = json_decode($content, true);
+
+        if ($parsed && isset($parsed['narration']) && isset($parsed['opening_line'])) {
+            // Save narration as system message
+            Message::create([
+                'chat_id' => $chat->id,
+                'role' => 'system',
+                'content' => $parsed['narration'],
+            ]);
+
+            // Save opening line as bot message
+            Message::create([
+                'chat_id' => $chat->id,
+                'role' => 'bot',
+                'content' => $parsed['opening_line'],
+                'prompt_tokens' => $response['prompt_tokens'],
+                'completion_tokens' => $response['completion_tokens'],
+                'cost' => $response['cost'],
+                'provider' => $response['provider'],
+                'model' => $response['model'],
+                'meta' => [
+                    'total_tokens' => $response['total_tokens'],
+                ],
+            ]);
+        } else {
+            // Fallback: save entire response as bot message
+            Log::warning('Could not parse opening messages JSON, using fallback', [
+                'chat_id' => $chat->id,
+                'content' => $content,
+            ]);
+
+            Message::create([
+                'chat_id' => $chat->id,
+                'role' => 'bot',
+                'content' => $content,
+                'prompt_tokens' => $response['prompt_tokens'],
+                'completion_tokens' => $response['completion_tokens'],
+                'cost' => $response['cost'],
+                'provider' => $response['provider'],
+                'model' => $response['model'],
+                'meta' => [
+                    'total_tokens' => $response['total_tokens'],
+                ],
+            ]);
+        }
+
+        // Update chat LLM cost
+        $chat->addLlmCost(
+            $response['total_tokens'],
+            $response['cost']
+        );
     }
 
     public function sendMessage(Chat $chat, string $content, array $sttMetadata = []): array
@@ -82,11 +174,20 @@ class ChatService
             // Call AI provider
             $response = $this->aiProvider->chat($history, $systemPrompt);
 
+            // Detect end-of-conversation marker
+            $conversationEnded = false;
+            $botContent = $response['content'];
+
+            if (str_contains($botContent, '[CONVERSACION_FINALIZADA]')) {
+                $botContent = trim(str_replace('[CONVERSACION_FINALIZADA]', '', $botContent));
+                $conversationEnded = true;
+            }
+
             // Save bot message
             $botMessage = Message::create([
                 'chat_id' => $chat->id,
                 'role' => 'bot',
-                'content' => $response['content'],
+                'content' => $botContent,
                 'prompt_tokens' => $response['prompt_tokens'],
                 'completion_tokens' => $response['completion_tokens'],
                 'cost' => $response['cost'],
@@ -103,9 +204,15 @@ class ChatService
                 $response['cost']
             );
 
+            // Mark chat as finished if conversation ended
+            if ($conversationEnded) {
+                $chat->finish();
+            }
+
             return [
                 'human_message' => $humanMessage,
                 'bot_message' => $botMessage,
+                'conversation_ended' => $conversationEnded,
                 'usage' => [
                     'prompt_tokens' => $response['prompt_tokens'],
                     'completion_tokens' => $response['completion_tokens'],

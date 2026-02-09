@@ -67,6 +67,11 @@ class Message extends Model
         return $this->role === 'system';
     }
 
+    public function isAction(): bool
+    {
+        return $this->role === 'action';
+    }
+
     public function getTotalTokens(): int
     {
         return ($this->prompt_tokens ?? 0) + ($this->completion_tokens ?? 0);

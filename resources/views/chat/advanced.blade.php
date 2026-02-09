@@ -1,9 +1,9 @@
 @extends('layouts.master')
 
-@section('title', 'Chat - YPF Chat Station')
+@section('title', 'Chat Advanced - YPF Chat Station')
 
 @section('breadcrumb')
-<li class="breadcrumb-item active">Chat</li>
+<li class="breadcrumb-item active">Chat Advanced</li>
 @endsection
 
 @push('css')
@@ -159,7 +159,7 @@
         overflow: hidden;
     }
 
-    /* Header del chat - 2 filas */
+    /* Header del chat */
     .chat-header {
         padding: 0.75rem 1.25rem;
         background: var(--cui-tertiary-bg);
@@ -212,7 +212,46 @@
         background: var(--cui-info);
     }
 
-    /* Settings dropdown button */
+    /* Stats */
+    .chat-stats {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .chat-stat {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.25rem 0.5rem;
+        background: var(--cui-secondary-bg);
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
+    }
+
+    .chat-stat-value {
+        font-weight: 600;
+        color: var(--ypf-blue);
+    }
+
+    .chat-stat-label {
+        color: var(--cui-secondary-color);
+        font-size: 0.65rem;
+        text-transform: uppercase;
+    }
+
+    .chat-stat-divider {
+        width: 1px;
+        height: 1rem;
+        background: var(--cui-border-color);
+        margin: 0 0.25rem;
+    }
+
+    /* Settings dropdown */
+    .chat-settings-wrapper {
+        position: relative;
+    }
+
     .chat-settings-btn {
         background: var(--cui-secondary-bg);
         border: 1px solid var(--cui-border-color);
@@ -232,7 +271,6 @@
         border-color: var(--ypf-blue);
     }
 
-    /* Settings dropdown content */
     .chat-settings-dropdown {
         position: absolute;
         top: 100%;
@@ -249,10 +287,6 @@
 
     .chat-settings-dropdown.show {
         display: block;
-    }
-
-    .chat-settings-wrapper {
-        position: relative;
     }
 
     .settings-group {
@@ -305,42 +339,182 @@
         font-family: monospace;
     }
 
-    /* Stats compactas en fila 2 */
-    .chat-stats {
+    /* ============================
+       Scene Panel (colapsable)
+       ============================ */
+    .scene-panel {
+        background: var(--cui-tertiary-bg);
+        border-bottom: 1px solid var(--cui-border-color);
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .scene-panel.collapsed .scene-panel-body {
+        display: none;
+    }
+
+    .scene-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.5rem 1.25rem;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .scene-panel-header:hover {
+        background: var(--cui-secondary-bg);
+    }
+
+    .scene-panel-title {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--cui-secondary-color);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .scene-panel-toggle {
+        font-size: 0.75rem;
+        color: var(--cui-secondary-color);
+        transition: transform 0.3s ease;
+    }
+
+    .scene-panel.collapsed .scene-panel-toggle {
+        transform: rotate(-90deg);
+    }
+
+    .scene-panel-body {
+        display: flex;
+        gap: 1.25rem;
+        padding: 0 1.25rem 1rem;
+        align-items: flex-start;
+    }
+
+    .scene-image-container {
+        flex-shrink: 0;
+        width: 200px;
+        height: 200px;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        border: 2px solid var(--cui-border-color);
+        background: var(--cui-secondary-bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .scene-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .scene-image-placeholder {
+        color: var(--cui-secondary-color);
+        text-align: center;
+        font-size: 0.8rem;
+    }
+
+    .scene-image-placeholder i {
+        font-size: 2rem;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .scene-narration {
+        flex: 1;
+        font-style: italic;
+        color: var(--cui-secondary-color);
+        font-size: 0.9375rem;
+        line-height: 1.6;
+        padding-top: 0.25rem;
+    }
+
+    .scene-vehicle-info {
+        margin-top: 0.75rem;
         display: flex;
         gap: 0.5rem;
         flex-wrap: wrap;
     }
 
-    .chat-stat {
-        display: flex;
+    .scene-vehicle-tag {
+        display: inline-flex;
         align-items: center;
         gap: 0.35rem;
-        padding: 0.25rem 0.5rem;
+        padding: 0.2rem 0.6rem;
         background: var(--cui-secondary-bg);
         border-radius: 0.375rem;
         font-size: 0.75rem;
+        font-style: normal;
+        color: var(--cui-body-color);
     }
 
-    .chat-stat-value {
-        font-weight: 600;
+    .scene-vehicle-tag i {
         color: var(--ypf-blue);
+        font-size: 0.7rem;
     }
 
-    .chat-stat-label {
-        color: var(--cui-secondary-color);
-        font-size: 0.65rem;
+    /* ============================
+       Action Bar
+       ============================ */
+    .action-bar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 0.5rem 1.25rem;
+        background: var(--cui-tertiary-bg);
+        border-top: 1px solid var(--cui-border-color);
+        flex-shrink: 0;
+    }
+
+    .action-bar-label {
+        font-size: 0.7rem;
         text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--cui-secondary-color);
+        font-weight: 600;
+        margin-right: 0.25rem;
     }
 
-    .chat-stat-divider {
-        width: 1px;
-        height: 1rem;
-        background: var(--cui-border-color);
-        margin: 0 0.25rem;
+    .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.4rem 0.85rem;
+        border-radius: 0.5rem;
+        border: 1px solid var(--cui-border-color);
+        background: var(--cui-body-bg);
+        color: var(--cui-body-color);
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-weight: 500;
     }
 
-    /* Contenedor de mensajes */
+    .action-btn:hover:not(:disabled) {
+        background: var(--ypf-blue);
+        color: white;
+        border-color: var(--ypf-blue);
+    }
+
+    .action-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .action-btn i {
+        font-size: 0.85rem;
+    }
+
+    /* ============================
+       Mensajes
+       ============================ */
     .messages-container {
         flex: 1;
         min-height: 0;
@@ -350,7 +524,6 @@
         flex-direction: column;
     }
 
-    /* Mensajes */
     .message {
         margin-bottom: 1.25rem;
         display: flex;
@@ -422,6 +595,21 @@
         text-align: center;
         border: 1px dashed var(--cui-border-color);
         border-radius: 0.75rem;
+    }
+
+    /* Action messages */
+    .message-action {
+        align-self: center;
+        max-width: 90%;
+    }
+
+    .message-action .message-bubble {
+        background: var(--cui-info-bg-subtle, rgba(13, 202, 240, 0.1));
+        color: var(--cui-info);
+        text-align: center;
+        border: 1px dashed var(--cui-info);
+        border-radius: 0.75rem;
+        font-size: 0.875rem;
     }
 
     .message-bubble p {
@@ -616,7 +804,6 @@
         100% { width: 150%; height: 150%; opacity: 0; }
     }
 
-    /* Cursor para indicar que es push-to-talk */
     .voice-btn:not(:disabled) {
         cursor: grab;
     }
@@ -653,7 +840,15 @@
         color: var(--cui-danger);
     }
 
-    /* Audio waveform animation (WhatsApp style) */
+    .voice-status.speaking {
+        color: var(--cui-success);
+    }
+
+    .voice-status i {
+        font-size: 0.875rem;
+    }
+
+    /* Audio waveform animation */
     .audio-waveform {
         display: flex;
         align-items: center;
@@ -685,69 +880,12 @@
         50% { transform: scaleY(1); opacity: 1; }
     }
 
-    /* Recording timer */
     .recording-timer {
         font-family: monospace;
         font-size: 0.875rem;
         font-weight: 600;
         color: var(--cui-danger);
         min-width: 36px;
-    }
-
-    /* TTS Debug button */
-    .tts-debug-btn {
-        background: transparent;
-        border: 1px solid var(--cui-border-color);
-        color: var(--cui-secondary-color);
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.375rem;
-        cursor: pointer;
-        font-size: 0.75rem;
-        transition: all 0.2s ease;
-    }
-
-    .tts-debug-btn:hover {
-        background: var(--cui-secondary-bg);
-        color: var(--cui-body-color);
-    }
-
-    /* TTS Debug logs */
-    .tts-debug-logs {
-        max-height: 400px;
-        overflow-y: auto;
-        font-family: monospace;
-        font-size: 0.8125rem;
-        background: #1e1e1e;
-        color: #d4d4d4;
-        padding: 1rem;
-        border-radius: 0.5rem;
-    }
-
-    .tts-log-entry {
-        padding: 0.25rem 0;
-        border-bottom: 1px solid #333;
-    }
-
-    .tts-log-entry:last-child {
-        border-bottom: none;
-    }
-
-    .tts-log-time {
-        color: #888;
-        margin-right: 0.5rem;
-    }
-
-    .tts-log-info { color: #4fc3f7; }
-    .tts-log-success { color: #81c784; }
-    .tts-log-warning { color: #ffb74d; }
-    .tts-log-error { color: #e57373; }
-
-    .voice-status.speaking {
-        color: var(--cui-success);
-    }
-
-    .voice-status i {
-        font-size: 0.875rem;
     }
 
     /* TTS toggle */
@@ -781,8 +919,7 @@
         color: var(--cui-success);
     }
 
-
-    /* Voice not supported warning */
+    /* Voice warning */
     .voice-warning {
         background: var(--cui-warning-bg-subtle);
         color: var(--cui-warning);
@@ -813,58 +950,6 @@
         to { transform: rotate(360deg); }
     }
 
-    /* Responsive */
-    @media (max-width: 992px) {
-        .chat-sidebar {
-            width: 240px;
-            min-width: 240px;
-        }
-
-        .chat-header-row:last-child {
-            flex-wrap: wrap;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .chat-wrapper {
-            flex-direction: column;
-            height: calc(100vh - 160px);
-        }
-
-        .chat-sidebar {
-            width: 100%;
-            min-width: 100%;
-            max-height: 200px;
-        }
-
-        .chat-header {
-            padding: 0.5rem 0.75rem;
-        }
-
-        .chat-header-info h2 {
-            font-size: 0.9rem;
-        }
-
-        .chat-stats {
-            display: none;
-        }
-
-        .chat-header-row:last-child {
-            justify-content: flex-end;
-        }
-
-        .chat-settings-dropdown {
-            right: -0.5rem;
-            min-width: 250px;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .chat-header-agent .badge-model {
-            display: none;
-        }
-    }
-
     /* ============================
        Evaluation Badge in Sidebar
        ============================ */
@@ -888,6 +973,27 @@
     .chat-item-badge.failed {
         background: var(--cui-danger);
         color: white;
+    }
+
+    /* Chat type badge in sidebar */
+    .chat-item-type {
+        font-size: 0.55rem;
+        padding: 0.1rem 0.3rem;
+        border-radius: 0.2rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .chat-item-type.advanced {
+        background: var(--ypf-yellow);
+        color: #333;
+    }
+
+    .chat-item-type.simple {
+        background: var(--cui-secondary-bg);
+        color: var(--cui-secondary-color);
     }
 
     /* ============================
@@ -1037,7 +1143,7 @@
         margin-top: 1rem;
     }
 
-    /* Finished panel (replaces input) */
+    /* Finished panel */
     .finished-panel-content {
         display: flex;
         align-items: center;
@@ -1075,6 +1181,77 @@
         color: var(--ypf-blue);
         font-weight: 500;
     }
+
+    /* Fuel cap modal */
+    .fuel-cap-info {
+        text-align: center;
+        padding: 1.5rem;
+    }
+
+    .fuel-cap-icon {
+        font-size: 3rem;
+        color: var(--ypf-blue);
+        margin-bottom: 1rem;
+    }
+
+    .fuel-cap-type {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--cui-body-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .fuel-cap-label {
+        font-size: 0.875rem;
+        color: var(--cui-secondary-color);
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .chat-sidebar {
+            width: 240px;
+            min-width: 240px;
+        }
+
+        .scene-panel-body {
+            flex-direction: column;
+        }
+
+        .scene-image-container {
+            width: 100%;
+            height: 150px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .chat-wrapper {
+            flex-direction: column;
+            height: calc(100vh - 160px);
+        }
+
+        .chat-sidebar {
+            width: 100%;
+            min-width: 100%;
+            max-height: 200px;
+        }
+
+        .chat-header {
+            padding: 0.5rem 0.75rem;
+        }
+
+        .chat-stats {
+            display: none;
+        }
+
+        .scene-panel-body {
+            flex-direction: column;
+        }
+
+        .scene-image-container {
+            width: 100%;
+            height: 120px;
+        }
+    }
 </style>
 @endpush
 
@@ -1099,7 +1276,7 @@
     {{-- Main Chat --}}
     <div class="chat-main">
         <div class="chat-header" id="chatHeader" style="display: none;">
-            {{-- Fila 1: Título + Badge --}}
+            {{-- Fila 1: Titulo + Badge --}}
             <div class="chat-header-row">
                 <div class="chat-header-info">
                     <h2 id="chatTitle">Conversacion</h2>
@@ -1135,6 +1312,10 @@
                     <div class="chat-stat" title="Costo de Speech-to-Text">
                         <span class="chat-stat-label">STT</span>
                         <span class="chat-stat-value">$<span id="chatSttCost">0.00</span></span>
+                    </div>
+                    <div class="chat-stat" title="Costo de imagen DALL-E">
+                        <span class="chat-stat-label">IMG</span>
+                        <span class="chat-stat-value">$<span id="chatImageCost">0.00</span></span>
                     </div>
                     <div class="chat-stat" id="chatEvalStat" title="Costo de evaluacion" style="display: none;">
                         <span class="chat-stat-label">EVAL</span>
@@ -1190,14 +1371,55 @@
             </div>
         </div>
 
+        {{-- Scene Panel (colapsable) --}}
+        <div class="scene-panel" id="scenePanel" style="display: none;">
+            <div class="scene-panel-header" onclick="toggleScenePanel()">
+                <span class="scene-panel-title">
+                    <i class="fas fa-film"></i> Escena
+                </span>
+                <i class="fas fa-chevron-down scene-panel-toggle"></i>
+            </div>
+            <div class="scene-panel-body">
+                <div class="scene-image-container" id="sceneImageContainer">
+                    <div class="scene-image-placeholder">
+                        <i class="fas fa-image"></i>
+                        <div>Sin imagen</div>
+                    </div>
+                </div>
+                <div class="scene-narration-wrapper">
+                    <div class="scene-narration" id="sceneNarration">
+                    </div>
+                    <div class="scene-vehicle-info" id="sceneVehicleInfo">
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="messages-container" id="messagesContainer">
             <div class="empty-state" id="emptyState">
                 <div class="empty-state-icon">
-                    <i class="fas fa-comments"></i>
+                    <i class="fas fa-gas-pump"></i>
                 </div>
-                <h3>Bienvenido a YPF Chat Station</h3>
-                <p>Selecciona una conversacion existente o crea una nueva para comenzar a practicar</p>
+                <h3>YPF Chat Station - Modo Avanzado</h3>
+                <p>Crea una nueva conversacion para practicar con escena, imagen y acciones del playero</p>
             </div>
+        </div>
+
+        {{-- Action Bar --}}
+        <div class="action-bar" id="actionBar" style="display: none;">
+            <span class="action-bar-label">Acciones:</span>
+            <button class="action-btn" id="actionOpenCap" onclick="openFuelCapModal()" title="Abrir tapa de combustible">
+                <i class="fas fa-gas-pump"></i>
+                <span>Abrir tapa</span>
+            </button>
+            <button class="action-btn" id="actionFuel" onclick="executeAction('cargar_combustible')" title="Cargar combustible">
+                <i class="fas fa-fill-drip"></i>
+                <span>Cargar combustible</span>
+            </button>
+            <button class="action-btn" id="actionCharge" onclick="executeAction('cobrar')" title="Cobrar">
+                <i class="fas fa-cash-register"></i>
+                <span>Cobrar</span>
+            </button>
         </div>
 
         <div class="input-container" id="inputContainer" style="display: none;">
@@ -1228,7 +1450,6 @@
                 <textarea class="message-input" id="messageInput"
                           placeholder="Escribe tu mensaje aqui..."
                           rows="1"></textarea>
-                <!-- Hidden input para almacenar texto de voz (push-to-talk) -->
                 <input type="hidden" id="voiceTranscript" value="">
                 <button class="voice-btn" id="voiceBtn" title="Mantener presionado para hablar">
                     <i class="fas fa-microphone"></i>
@@ -1240,9 +1461,6 @@
 
             {{-- TTS Toggle --}}
             <div style="display: flex; justify-content: flex-end; margin-top: 0.5rem; gap: 1rem;">
-                <button class="tts-debug-btn" id="ttsDebugBtn" onclick="openTTSDebugModal()" title="Ver logs de TTS">
-                    <i class="fas fa-bug"></i>
-                </button>
                 <label class="tts-toggle active" id="ttsToggle" title="Activar/desactivar lectura automatica de respuestas">
                     <input type="checkbox" id="ttsEnabled" checked>
                     <i class="fas fa-volume-up toggle-icon"></i>
@@ -1251,7 +1469,7 @@
             </div>
         </div>
 
-        {{-- Finished chat panel (replaces input when conversation ends) --}}
+        {{-- Finished chat panel --}}
         <div class="input-container" id="finishedPanel" style="display: none;">
             <div class="finished-panel-content">
                 <div class="finished-panel-info">
@@ -1272,43 +1490,33 @@
     </div>
 </div>
 
-{{-- TTS Debug Modal --}}
-<div class="modal fade" id="ttsDebugModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+{{-- Fuel Cap Modal --}}
+<div class="modal fade" id="fuelCapModal" tabindex="-1">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="fas fa-bug me-2"></i>TTS Debug Log</h5>
+                <h5 class="modal-title"><i class="fas fa-gas-pump me-2"></i>Tapa de combustible</h5>
                 <button type="button" class="btn-close" data-coreui-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <strong>Estado actual:</strong>
-                    <div id="ttsDebugStatus" class="mt-2 p-2 bg-light rounded">
-                        <div><strong>TTS Soportado:</strong> <span id="debugTtsSupported">-</span></div>
-                        <div><strong>TTS Habilitado:</strong> <span id="debugTtsEnabled">-</span></div>
-                        <div><strong>Voces disponibles:</strong> <span id="debugVoicesCount">-</span></div>
-                        <div><strong>Voz seleccionada:</strong> <span id="debugSelectedVoice">-</span></div>
-                        <div><strong>speechSynthesis.speaking:</strong> <span id="debugIsSpeaking">-</span></div>
-                        <div><strong>speechSynthesis.pending:</strong> <span id="debugIsPending">-</span></div>
-                        <div><strong>speechSynthesis.paused:</strong> <span id="debugIsPaused">-</span></div>
+                <div class="fuel-cap-info">
+                    <div class="fuel-cap-icon">
+                        <i class="fas fa-gas-pump"></i>
                     </div>
+                    <div class="fuel-cap-type" id="fuelCapType">-</div>
+                    <div class="fuel-cap-label">Tipo de combustible requerido</div>
                 </div>
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <strong>Logs:</strong>
-                    <div>
-                        <button class="btn btn-sm btn-outline-primary me-2" onclick="testTTSFromModal()">
-                            <i class="fas fa-play me-1"></i>Test TTS
-                        </button>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="clearTTSLogs()">
-                            <i class="fas fa-trash me-1"></i>Limpiar
-                        </button>
-                    </div>
-                </div>
-                <div id="ttsDebugLogs" class="tts-debug-logs"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="confirmFuelCap()">
+                    <i class="fas fa-check me-1"></i>Confirmar
+                </button>
             </div>
         </div>
     </div>
 </div>
+
 {{-- Evaluation Modal --}}
 <div class="modal fade" id="evaluationModal" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -1354,6 +1562,7 @@
 @push('scripts')
 <script>
 let currentChatId = null;
+let currentSceneData = null;
 let isLoading = false;
 let isSwitchingChat = false;
 const USD_TO_ARS = 2000;
@@ -1362,16 +1571,17 @@ function updateTotalCost() {
     const llm = parseFloat(document.getElementById('chatLlmCost').textContent) || 0;
     const tts = parseFloat(document.getElementById('chatTtsCost').textContent) || 0;
     const stt = parseFloat(document.getElementById('chatSttCost').textContent) || 0;
+    const img = parseFloat(document.getElementById('chatImageCost').textContent) || 0;
     const eval_ = parseFloat(document.getElementById('chatEvalCost').textContent) || 0;
-    const totalUsd = llm + tts + stt + eval_;
+    const totalUsd = llm + tts + stt + img + eval_;
     document.getElementById('chatTotalUsd').textContent = totalUsd.toFixed(4);
     document.getElementById('chatTotalArs').textContent = (totalUsd * USD_TO_ARS).toFixed(2);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
     loadChats();
-    initVoice(); // Inicializar funcionalidades de voz
-    initSpeechProviders(); // Inicializar selectores de proveedores STT/TTS
+    initVoice();
+    initSpeechProviders();
 
     const messageInput = document.getElementById('messageInput');
 
@@ -1385,12 +1595,15 @@ document.addEventListener('DOMContentLoaded', function() {
     messageInput.addEventListener('input', function() {
         this.style.height = 'auto';
         this.style.height = Math.min(this.scrollHeight, 200) + 'px';
-        stopSpeakingUnified(); // Detener TTS si el usuario escribe
+        stopSpeakingUnified();
     });
 
-    // Stop TTS when user focuses on input
     messageInput.addEventListener('focus', stopSpeakingUnified);
 });
+
+// ============================================
+// CHAT LIST (loads ALL chats, shows type badge)
+// ============================================
 
 async function loadChats() {
     try {
@@ -1441,37 +1654,46 @@ function renderChatList(chats) {
             }
         }
 
+        const typeClass = chat.chat_type === 'advanced' ? 'advanced' : 'simple';
+        const typeLabel = chat.chat_type === 'advanced' ? 'ADV' : 'SIM';
+        const typeBadge = `<span class="chat-item-type ${typeClass}">${typeLabel}</span>`;
+
         div.innerHTML = `
             <div class="chat-item-content">
                 <div class="chat-item-icon">
-                    <i class="fas fa-message"></i>
+                    <i class="fas fa-${chat.chat_type === 'advanced' ? 'film' : 'message'}"></i>
                 </div>
                 ${badgeHtml}
+                ${typeBadge}
                 <span class="chat-item-title">${escapeHtml(chat.title || 'Sin titulo')}</span>
             </div>
             <i class="fas fa-trash chat-item-delete" onclick="deleteChat(event, ${chat.id})" title="Eliminar"></i>
         `;
         div.addEventListener('click', function(e) {
             if (!e.target.classList.contains('chat-item-delete')) {
-                selectChat(chat.id);
+                selectChat(chat.id, chat.chat_type);
             }
         });
         chatList.appendChild(div);
     });
 }
 
+// ============================================
+// ADVANCED CHAT CRUD
+// ============================================
+
 async function createNewChat() {
     try {
         const btn = document.querySelector('.new-chat-btn');
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando...';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando escena...';
 
-        const response = await apiFetch('/api/chats', { method: 'POST' });
+        const response = await apiFetch('/api/advanced/chats', { method: 'POST' });
         const data = await response.json();
 
         if (data.status) {
             await loadChats();
-            await selectChat(data.data.id);
+            await selectChat(data.data.id, 'advanced');
         } else {
             alert(data.message || 'Error al crear la conversacion');
         }
@@ -1485,12 +1707,13 @@ async function createNewChat() {
     }
 }
 
-async function selectChat(chatId) {
+async function selectChat(chatId, chatType) {
     if (chatId === currentChatId || isSwitchingChat) return;
 
     isSwitchingChat = true;
     clearChatUI();
     currentChatId = chatId;
+    currentSceneData = null;
 
     document.querySelectorAll('.chat-item').forEach(item => {
         item.classList.remove('active');
@@ -1518,10 +1741,16 @@ async function selectChat(chatId) {
     document.getElementById('chatLlmCost').textContent = '0.00';
     document.getElementById('chatTtsCost').textContent = '0.00';
     document.getElementById('chatSttCost').textContent = '0.00';
+    document.getElementById('chatImageCost').textContent = '0.00';
 
     try {
+        // Use advanced endpoint for advanced chats, regular for simple
+        const chatEndpoint = chatType === 'advanced'
+            ? `/api/advanced/chats/${chatId}`
+            : `/api/chats/${chatId}`;
+
         const [chatResponse, messagesResponse] = await Promise.all([
-            apiFetch(`/api/chats/${chatId}`),
+            apiFetch(chatEndpoint),
             apiFetch(`/api/chats/${chatId}/messages`)
         ]);
 
@@ -1534,16 +1763,18 @@ async function selectChat(chatId) {
         }
 
         if (chatData.status) {
-            document.getElementById('chatTitle').textContent = chatData.data.title || 'Conversacion';
-            document.getElementById('chatAgent').textContent = chatData.data.agent?.name || 'Bot';
-            document.getElementById('chatTokens').textContent = chatData.data.total_tokens || 0;
-            document.getElementById('chatLlmCost').textContent = parseFloat(chatData.data.total_llm_cost || 0).toFixed(4);
-            document.getElementById('chatTtsCost').textContent = parseFloat(chatData.data.total_tts_cost || 0).toFixed(4);
-            document.getElementById('chatSttCost').textContent = parseFloat(chatData.data.total_stt_cost || 0).toFixed(4);
+            const chat = chatData.data;
+            document.getElementById('chatTitle').textContent = chat.title || 'Conversacion';
+            document.getElementById('chatAgent').textContent = chat.agent?.name || 'Bot';
+            document.getElementById('chatTokens').textContent = chat.total_tokens || 0;
+            document.getElementById('chatLlmCost').textContent = parseFloat(chat.total_llm_cost || 0).toFixed(4);
+            document.getElementById('chatTtsCost').textContent = parseFloat(chat.total_tts_cost || 0).toFixed(4);
+            document.getElementById('chatSttCost').textContent = parseFloat(chat.total_stt_cost || 0).toFixed(4);
+            document.getElementById('chatImageCost').textContent = parseFloat(chat.total_image_cost || 0).toFixed(4);
 
-            // Eval cost from evaluation relation
-            if (chatData.data.evaluation && chatData.data.evaluation.cost) {
-                document.getElementById('chatEvalCost').textContent = parseFloat(chatData.data.evaluation.cost).toFixed(4);
+            // Eval cost
+            if (chat.evaluation && chat.evaluation.cost) {
+                document.getElementById('chatEvalCost').textContent = parseFloat(chat.evaluation.cost).toFixed(4);
                 document.getElementById('chatEvalStat').style.display = 'flex';
             } else {
                 document.getElementById('chatEvalCost').textContent = '0.00';
@@ -1552,9 +1783,22 @@ async function selectChat(chatId) {
 
             updateTotalCost();
 
-            // Handle finished chats
-            if (chatData.data.status === 'finished') {
-                showFinishedPanel(!!chatData.data.evaluation);
+            // Scene panel for advanced chats
+            if (chat.scene_data) {
+                currentSceneData = chat.scene_data;
+                renderScenePanel(chat);
+            } else {
+                document.getElementById('scenePanel').style.display = 'none';
+            }
+
+            // Action bar for active advanced chats
+            const isAdvanced = chat.chat_type === 'advanced';
+            const isActive = chat.status !== 'finished';
+            document.getElementById('actionBar').style.display = (isAdvanced && isActive) ? 'flex' : 'none';
+
+            // Finished chats
+            if (chat.status === 'finished') {
+                showFinishedPanel(!!chat.evaluation);
             }
         }
 
@@ -1595,12 +1839,75 @@ function clearChatUI() {
     document.getElementById('chatLlmCost').textContent = '0.00';
     document.getElementById('chatTtsCost').textContent = '0.00';
     document.getElementById('chatSttCost').textContent = '0.00';
+    document.getElementById('chatImageCost').textContent = '0.00';
     document.getElementById('chatEvalCost').textContent = '0.00';
     document.getElementById('chatEvalStat').style.display = 'none';
     document.getElementById('chatTotalUsd').textContent = '0.00';
     document.getElementById('chatTotalArs').textContent = '0';
+    document.getElementById('scenePanel').style.display = 'none';
+    document.getElementById('actionBar').style.display = 'none';
+    currentSceneData = null;
     showInputPanel();
 }
+
+// ============================================
+// SCENE PANEL
+// ============================================
+
+function renderScenePanel(chat) {
+    const panel = document.getElementById('scenePanel');
+    panel.style.display = 'block';
+    panel.classList.remove('collapsed');
+
+    // Image
+    const imageContainer = document.getElementById('sceneImageContainer');
+    if (chat.scene_image_url) {
+        imageContainer.innerHTML = `<img src="${chat.scene_image_url}" alt="Escena" loading="lazy">`;
+    } else {
+        imageContainer.innerHTML = `
+            <div class="scene-image-placeholder">
+                <i class="fas fa-image"></i>
+                <div>Sin imagen</div>
+            </div>
+        `;
+    }
+
+    // Narration
+    const narration = document.getElementById('sceneNarration');
+    const sceneData = chat.scene_data;
+    narration.textContent = sceneData.narration || '';
+
+    // Vehicle info tags
+    const vehicleInfo = document.getElementById('sceneVehicleInfo');
+    vehicleInfo.innerHTML = '';
+
+    if (sceneData.vehicle) {
+        const v = sceneData.vehicle;
+        const tags = [];
+        if (v.brand && v.model) tags.push({ icon: 'fa-car', text: `${v.brand} ${v.model}` });
+        if (v.color) tags.push({ icon: 'fa-palette', text: v.color });
+        if (v.year) tags.push({ icon: 'fa-calendar', text: v.year });
+        if (v.fuel_type_label) tags.push({ icon: 'fa-gas-pump', text: v.fuel_type_label });
+
+        tags.forEach(tag => {
+            vehicleInfo.innerHTML += `
+                <span class="scene-vehicle-tag">
+                    <i class="fas ${tag.icon}"></i>
+                    ${escapeHtml(String(tag.text))}
+                </span>
+            `;
+        });
+    }
+}
+
+function toggleScenePanel() {
+    const panel = document.getElementById('scenePanel');
+    panel.classList.toggle('collapsed');
+}
+
+// ============================================
+// MESSAGES
+// ============================================
 
 function renderMessages(messages) {
     const container = document.getElementById('messagesContainer');
@@ -1620,10 +1927,42 @@ function renderMessages(messages) {
     }
 
     let lastModel = null;
-    let lastProvider = null;
 
     messages.forEach(msg => {
-        const div = document.createElement('div');
+        appendMessageToDOM(msg, container);
+        if (msg.role === 'bot' && msg.model) {
+            lastModel = msg.model;
+        }
+    });
+
+    if (lastModel) {
+        document.getElementById('chatModel').textContent = lastModel;
+        document.getElementById('chatModelBadge').style.display = 'inline-flex';
+    }
+
+    requestAnimationFrame(() => {
+        container.scrollTop = container.scrollHeight;
+    });
+}
+
+function appendMessageToDOM(msg, container) {
+    const div = document.createElement('div');
+
+    if (msg.role === 'action') {
+        div.className = 'message message-action';
+        const actionType = msg.meta?.action_type || '';
+        const actionIcons = {
+            'abrir_tapa': 'fa-gas-pump',
+            'cargar_combustible': 'fa-fill-drip',
+            'cobrar': 'fa-cash-register',
+        };
+        const icon = actionIcons[actionType] || 'fa-hand-pointer';
+        div.innerHTML = `
+            <div class="message-bubble">
+                <p><i class="fas ${icon} me-1"></i>${escapeHtml(msg.content)}</p>
+            </div>
+        `;
+    } else {
         div.className = 'message message-' + msg.role;
 
         let metaHtml = '';
@@ -1633,8 +1972,6 @@ function renderMessages(messages) {
                     <span class="model-badge">${escapeHtml(msg.provider || '')}/${escapeHtml(msg.model)}</span>
                 </div>
             `;
-            lastModel = msg.model;
-            lastProvider = msg.provider;
         }
 
         const avatarHtml = msg.role === 'system'
@@ -1648,19 +1985,14 @@ function renderMessages(messages) {
                 ${metaHtml}
             </div>
         `;
-        container.appendChild(div);
-    });
-
-    // Update header with last used model
-    if (lastModel) {
-        document.getElementById('chatModel').textContent = lastModel;
-        document.getElementById('chatModelBadge').style.display = 'inline-flex';
     }
 
-    requestAnimationFrame(() => {
-        container.scrollTop = container.scrollHeight;
-    });
+    container.appendChild(div);
 }
+
+// ============================================
+// SEND MESSAGE (uses advanced endpoint)
+// ============================================
 
 async function sendMessage() {
     if (isLoading || !currentChatId) return;
@@ -1670,6 +2002,7 @@ async function sendMessage() {
     if (!content) return;
 
     isLoading = true;
+    updateActionButtons(true);
     document.getElementById('sendBtn').disabled = true;
     input.value = '';
     input.style.height = 'auto';
@@ -1702,18 +2035,16 @@ async function sendMessage() {
     const requestBody = { content };
     if (currentSttMetadata) {
         Object.assign(requestBody, currentSttMetadata);
-        // Update STT cost UI
         if (currentSttMetadata.stt_cost > 0) {
             const currentSttCost = parseFloat(document.getElementById('chatSttCost').textContent) || 0;
             document.getElementById('chatSttCost').textContent = (currentSttCost + currentSttMetadata.stt_cost).toFixed(4);
             updateTotalCost();
         }
     }
-    const sttMetadataUsed = currentSttMetadata;
-    currentSttMetadata = null; // Clear for next message
+    currentSttMetadata = null;
 
     try {
-        const response = await apiFetch(`/api/chats/${currentChatId}/messages`, {
+        const response = await apiFetch(`/api/advanced/chats/${currentChatId}/messages`, {
             method: 'POST',
             body: JSON.stringify(requestBody)
         });
@@ -1732,7 +2063,6 @@ async function sendMessage() {
                         <span class="model-badge">${escapeHtml(usage.provider || '')}/${escapeHtml(usage.model)}</span>
                     </div>
                 `;
-                // Update header model badge
                 document.getElementById('chatModel').textContent = usage.model;
                 document.getElementById('chatModelBadge').style.display = 'inline-flex';
             }
@@ -1749,7 +2079,7 @@ async function sendMessage() {
             container.appendChild(botDiv);
             container.scrollTop = container.scrollHeight;
 
-            // TTS: Leer respuesta del bot en voz alta si está habilitado
+            // TTS
             speakTextUnified(botMsg.content, botMsg.id);
 
             if (usage) {
@@ -1763,6 +2093,7 @@ async function sendMessage() {
             // Check if conversation ended
             if (data.data.conversation_ended) {
                 showFinishedPanel(false);
+                document.getElementById('actionBar').style.display = 'none';
                 triggerEvaluation(currentChatId);
             }
 
@@ -1776,10 +2107,85 @@ async function sendMessage() {
         alert('Error al enviar el mensaje.');
     } finally {
         isLoading = false;
+        updateActionButtons(false);
         document.getElementById('sendBtn').disabled = false;
         document.getElementById('messageInput').focus();
     }
 }
+
+// ============================================
+// ACTIONS
+// ============================================
+
+function updateActionButtons(disabled) {
+    document.querySelectorAll('.action-btn').forEach(btn => btn.disabled = disabled);
+}
+
+async function executeAction(actionType, extraData = null) {
+    if (isLoading || !currentChatId) return;
+
+    updateActionButtons(true);
+
+    try {
+        const body = { action_type: actionType };
+        if (extraData) body.extra_data = extraData;
+
+        const response = await apiFetch(`/api/advanced/chats/${currentChatId}/actions`, {
+            method: 'POST',
+            body: JSON.stringify(body)
+        });
+
+        const data = await response.json();
+
+        if (data.status) {
+            const container = document.getElementById('messagesContainer');
+            const emptyState = container.querySelector('.empty-state');
+            if (emptyState) emptyState.remove();
+
+            appendMessageToDOM(data.data, container);
+            container.scrollTop = container.scrollHeight;
+        } else {
+            alert(data.message || 'Error al registrar la accion');
+        }
+    } catch (error) {
+        console.error('Error executing action:', error);
+        alert('Error al registrar la accion');
+    } finally {
+        updateActionButtons(false);
+    }
+}
+
+// ============================================
+// FUEL CAP MODAL
+// ============================================
+
+let fuelCapModalInstance = null;
+
+function openFuelCapModal() {
+    if (!currentSceneData || !currentSceneData.vehicle) {
+        alert('No hay datos de escena disponibles');
+        return;
+    }
+
+    const fuelTypeLabel = currentSceneData.vehicle.fuel_type_label || 'Desconocido';
+    document.getElementById('fuelCapType').textContent = fuelTypeLabel;
+
+    fuelCapModalInstance = new coreui.Modal(document.getElementById('fuelCapModal'));
+    fuelCapModalInstance.show();
+}
+
+function confirmFuelCap() {
+    if (fuelCapModalInstance) {
+        fuelCapModalInstance.hide();
+    }
+
+    const fuelTypeLabel = currentSceneData?.vehicle?.fuel_type_label || '';
+    executeAction('abrir_tapa', { fuel_type_label: fuelTypeLabel });
+}
+
+// ============================================
+// DELETE CHAT
+// ============================================
 
 async function deleteChat(event, chatId) {
     event.stopPropagation();
@@ -1792,13 +2198,16 @@ async function deleteChat(event, chatId) {
         if (data.status) {
             if (currentChatId === chatId) {
                 currentChatId = null;
+                currentSceneData = null;
                 document.getElementById('chatHeader').style.display = 'none';
                 document.getElementById('inputContainer').style.display = 'none';
+                document.getElementById('scenePanel').style.display = 'none';
+                document.getElementById('actionBar').style.display = 'none';
                 document.getElementById('messagesContainer').innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon"><i class="fas fa-comments"></i></div>
-                        <h3>Bienvenido a YPF Chat Station</h3>
-                        <p>Selecciona una conversacion existente o crea una nueva para comenzar a practicar</p>
+                        <div class="empty-state-icon"><i class="fas fa-gas-pump"></i></div>
+                        <h3>YPF Chat Station - Modo Avanzado</h3>
+                        <p>Crea una nueva conversacion para practicar con escena, imagen y acciones del playero</p>
                     </div>
                 `;
             }
@@ -1818,9 +2227,9 @@ function escapeHtml(text) {
     return div.innerHTML.replace(/\n/g, '<br>');
 }
 
-// ===========================================
-// VOZ - Opción A: Browser Nativo (Web Speech API)
-// ===========================================
+// ============================================
+// VOZ - Browser Nativo (Web Speech API)
+// ============================================
 
 let recognition = null;
 let isRecording = false;
@@ -1829,25 +2238,21 @@ let ttsSupported = false;
 let recordingTimerInterval = null;
 let recordingSeconds = 0;
 
-// Initialize Voice Features
 function initVoice() {
-    // Check STT support (SpeechRecognition)
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (SpeechRecognition) {
         voiceSupported = true;
         recognition = new SpeechRecognition();
-        recognition.lang = 'es-AR'; // Español Argentina
-        recognition.continuous = true; // Mantener escuchando mientras el boton esta presionado
+        recognition.lang = 'es-AR';
+        recognition.continuous = true;
         recognition.interimResults = true;
         recognition.maxAlternatives = 1;
 
         recognition.onstart = function() {
             isRecording = true;
             updateVoiceUI('recording');
-            // Limpiar el transcript hidden al iniciar
             document.getElementById('voiceTranscript').value = '';
-            console.log('Voice recognition started (push-to-talk mode)');
         };
 
         recognition.onresult = function(event) {
@@ -1863,63 +2268,39 @@ function initVoice() {
                 }
             }
 
-            // Guardar en el input hidden (NO en el visible)
             const hiddenInput = document.getElementById('voiceTranscript');
-            const currentText = hiddenInput.value;
-
             if (finalTranscript) {
-                // Acumular texto final
-                hiddenInput.value = currentText + finalTranscript;
-                console.log('Final transcript accumulated:', hiddenInput.value);
+                hiddenInput.value = hiddenInput.value + finalTranscript;
             }
 
-            // Mantener el indicador de grabando activo
             if (interimTranscript || finalTranscript) {
                 updateVoiceStatus('Grabando...');
             }
         };
 
         recognition.onerror = function(event) {
-            console.error('Speech recognition error:', event.error);
             isRecording = false;
             updateVoiceUI('idle');
+            if (event.error === 'aborted') return;
 
             let errorMsg = 'Error de reconocimiento de voz';
             switch(event.error) {
-                case 'no-speech':
-                    errorMsg = 'No se detecto voz. Intenta de nuevo.';
-                    break;
-                case 'audio-capture':
-                    errorMsg = 'No se pudo acceder al microfono.';
-                    break;
-                case 'not-allowed':
-                    errorMsg = 'Permiso de microfono denegado.';
-                    break;
-                case 'network':
-                    errorMsg = 'Error de red. Se requiere conexion a internet.';
-                    break;
-                case 'aborted':
-                    // Esto es normal cuando se detiene manualmente
-                    return;
+                case 'no-speech': errorMsg = 'No se detecto voz. Intenta de nuevo.'; break;
+                case 'audio-capture': errorMsg = 'No se pudo acceder al microfono.'; break;
+                case 'not-allowed': errorMsg = 'Permiso de microfono denegado.'; break;
+                case 'network': errorMsg = 'Error de red.'; break;
             }
             showVoiceWarning(errorMsg);
         };
 
         recognition.onend = function() {
-            // Solo procesar si estamos en modo recording (evita doble-envio)
             if (!isRecording) return;
-
             isRecording = false;
             updateVoiceUI('idle');
-            console.log('Voice recognition ended');
-
-            // Enviar el mensaje desde el hidden input
             sendVoiceMessage();
         };
 
-        // Configurar eventos push-to-talk en el boton
         setupPushToTalk();
-
     } else {
         voiceSupported = false;
         const voiceBtn = document.getElementById('voiceBtn');
@@ -1927,41 +2308,29 @@ function initVoice() {
             voiceBtn.disabled = true;
             voiceBtn.title = 'Tu navegador no soporta reconocimiento de voz';
         }
-        console.warn('Speech Recognition not supported in this browser');
     }
 
-    // Check TTS support (SpeechSynthesis)
     if ('speechSynthesis' in window) {
         ttsSupported = true;
-        ttsLog('TTS soportado: Si', 'success');
-
-        // Load voices (they may load asynchronously)
         if (speechSynthesis.onvoiceschanged !== undefined) {
             speechSynthesis.onvoiceschanged = loadVoices;
         }
         loadVoices();
     } else {
         ttsSupported = false;
-        ttsLog('TTS soportado: No - navegador no compatible', 'error');
         const ttsToggle = document.getElementById('ttsToggle');
-        if (ttsToggle) {
-            ttsToggle.style.display = 'none';
-        }
+        if (ttsToggle) ttsToggle.style.display = 'none';
     }
 
-    // TTS toggle event
     const ttsCheckbox = document.getElementById('ttsEnabled');
     if (ttsCheckbox) {
         ttsCheckbox.addEventListener('change', function() {
             const toggle = document.getElementById('ttsToggle');
             if (this.checked) {
                 toggle.classList.add('active');
-                // Stop any ongoing speech when disabling
             } else {
                 toggle.classList.remove('active');
-                if (speechSynthesis.speaking) {
-                    speechSynthesis.cancel();
-                }
+                if (speechSynthesis.speaking) speechSynthesis.cancel();
             }
         });
     }
@@ -1971,88 +2340,48 @@ let availableVoices = [];
 
 function loadVoices() {
     availableVoices = speechSynthesis.getVoices();
-    ttsLog(`Voces cargadas: ${availableVoices.length} disponibles`, 'info');
-
-    // Log Spanish voices
-    const spanishVoices = availableVoices.filter(v => v.lang.startsWith('es'));
-    if (spanishVoices.length > 0) {
-        ttsLog(`Voces en espanol: ${spanishVoices.map(v => v.name).join(', ')}`, 'info');
-    } else {
-        ttsLog('No se encontraron voces en espanol', 'warning');
-    }
 }
 
 function getSpanishVoice() {
-    // Prefer Spanish voices
     const spanishVoice = availableVoices.find(v =>
         v.lang.startsWith('es') && (v.lang.includes('AR') || v.lang.includes('ES') || v.lang.includes('MX'))
     );
     if (spanishVoice) return spanishVoice;
-
-    // Fallback to any Spanish voice
-    const anySpanish = availableVoices.find(v => v.lang.startsWith('es'));
-    if (anySpanish) return anySpanish;
-
-    // Return default
-    return null;
+    return availableVoices.find(v => v.lang.startsWith('es')) || null;
 }
 
-// Configurar eventos push-to-talk (mantener presionado para grabar)
 function setupPushToTalk() {
     const voiceBtn = document.getElementById('voiceBtn');
     if (!voiceBtn) return;
 
-    // Prevenir el menu contextual en el boton (para long-press en mobile)
     voiceBtn.addEventListener('contextmenu', (e) => e.preventDefault());
-
-    // Mouse events (desktop) - usar funciones unificadas
     voiceBtn.addEventListener('mousedown', startVoiceRecordingUnified);
     voiceBtn.addEventListener('mouseup', stopVoiceRecordingUnified);
-    voiceBtn.addEventListener('mouseleave', stopVoiceRecordingUnified); // Por si el usuario suelta fuera del boton
+    voiceBtn.addEventListener('mouseleave', stopVoiceRecordingUnified);
 
-    // Touch events (mobile)
-    voiceBtn.addEventListener('touchstart', (e) => {
-        e.preventDefault(); // Prevenir comportamiento por defecto del touch
-        startVoiceRecordingUnified(e);
-    });
-    voiceBtn.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        stopVoiceRecordingUnified(e);
-    });
+    voiceBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startVoiceRecordingUnified(e); });
+    voiceBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopVoiceRecordingUnified(e); });
     voiceBtn.addEventListener('touchcancel', stopVoiceRecordingUnified);
 }
 
 async function startVoiceRecording(e) {
     if (!voiceSupported) {
-        showVoiceWarning('Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.');
+        showVoiceWarning('Tu navegador no soporta reconocimiento de voz.');
         return;
     }
-
     if (!currentChatId) {
         showVoiceWarning('Selecciona o crea una conversacion primero.');
         return;
     }
-
-    if (isLoading || isRecording) {
-        return;
-    }
+    if (isLoading || isRecording) return;
 
     try {
-        // Solicitar permiso de microfono
         await navigator.mediaDevices.getUserMedia({ audio: true });
-
-        // Limpiar transcript previo
         document.getElementById('voiceTranscript').value = '';
-
-        // Iniciar reconocimiento
         recognition.start();
-        console.log('Push-to-talk: recording started');
     } catch (error) {
-        console.error('Error starting recognition:', error);
-        if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
-            showVoiceWarning('Permiso de microfono denegado. Habilita el microfono en la configuracion del navegador.');
-        } else if (error.name === 'NotFoundError') {
-            showVoiceWarning('No se encontro un microfono. Conecta uno e intenta de nuevo.');
+        if (error.name === 'NotAllowedError') {
+            showVoiceWarning('Permiso de microfono denegado.');
         } else {
             showVoiceWarning('Error al iniciar el microfono: ' + error.message);
         }
@@ -2061,44 +2390,22 @@ async function startVoiceRecording(e) {
 
 function stopVoiceRecording(e) {
     if (!isRecording) return;
-
-    console.log('Push-to-talk: stopping recording');
     recognition.stop();
 }
 
-// Enviar mensaje capturado por voz
 function sendVoiceMessage() {
     const hiddenInput = document.getElementById('voiceTranscript');
     const content = hiddenInput.value.trim();
+    if (!content || !currentChatId || isLoading) return;
 
-    if (!content) {
-        console.log('No voice content to send');
-        return;
-    }
-
-    if (!currentChatId || isLoading) {
-        console.log('Cannot send: no chat selected or loading');
-        return;
-    }
-
-    console.log('Sending voice message:', content);
-
-    // Copiar al input visible temporalmente para que sendMessage() lo use
-    const messageInput = document.getElementById('messageInput');
-    messageInput.value = content;
-
-    // Limpiar hidden input
+    document.getElementById('messageInput').value = content;
     hiddenInput.value = '';
-
-    // Enviar mensaje
     sendMessage();
 }
 
 function updateVoiceUI(state) {
     const voiceBtn = document.getElementById('voiceBtn');
     const voiceStatus = document.getElementById('voiceStatus');
-    const voiceStatusText = document.getElementById('voiceStatusText');
-
     const waveform = document.getElementById('audioWaveform');
     const timer = document.getElementById('recordingTimer');
 
@@ -2112,7 +2419,7 @@ function updateVoiceUI(state) {
             voiceStatus.querySelector('i').style.display = 'none';
             timer.style.display = 'inline';
             waveform.style.display = 'flex';
-            voiceStatusText.textContent = 'Grabando...';
+            document.getElementById('voiceStatusText').textContent = 'Grabando...';
             startRecordingTimer();
             break;
         case 'speaking':
@@ -2123,7 +2430,7 @@ function updateVoiceUI(state) {
             voiceStatus.querySelector('i').style.display = 'inline';
             timer.style.display = 'none';
             waveform.style.display = 'none';
-            voiceStatusText.textContent = 'Hablando...';
+            document.getElementById('voiceStatusText').textContent = 'Hablando...';
             break;
         case 'idle':
         default:
@@ -2141,10 +2448,8 @@ function updateVoiceUI(state) {
 }
 
 function updateVoiceStatus(text) {
-    const voiceStatusText = document.getElementById('voiceStatusText');
-    if (voiceStatusText) {
-        voiceStatusText.textContent = text;
-    }
+    const el = document.getElementById('voiceStatusText');
+    if (el) el.textContent = text;
 }
 
 function showVoiceWarning(message) {
@@ -2153,139 +2458,85 @@ function showVoiceWarning(message) {
     if (warning && warningText) {
         warningText.textContent = message;
         warning.classList.add('show');
-        setTimeout(() => {
-            warning.classList.remove('show');
-        }, 4000);
+        setTimeout(() => warning.classList.remove('show'), 4000);
     }
 }
 
 function startRecordingTimer() {
     recordingSeconds = 0;
     updateTimerDisplay();
-    recordingTimerInterval = setInterval(() => {
-        recordingSeconds++;
-        updateTimerDisplay();
-    }, 1000);
+    recordingTimerInterval = setInterval(() => { recordingSeconds++; updateTimerDisplay(); }, 1000);
 }
 
 function stopRecordingTimer() {
-    if (recordingTimerInterval) {
-        clearInterval(recordingTimerInterval);
-        recordingTimerInterval = null;
-    }
+    if (recordingTimerInterval) { clearInterval(recordingTimerInterval); recordingTimerInterval = null; }
     recordingSeconds = 0;
 }
 
 function updateTimerDisplay() {
     const timer = document.getElementById('recordingTimer');
     if (timer) {
-        const minutes = Math.floor(recordingSeconds / 60);
-        const seconds = recordingSeconds % 60;
-        timer.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        const m = Math.floor(recordingSeconds / 60);
+        const s = recordingSeconds % 60;
+        timer.textContent = `${m}:${s.toString().padStart(2, '0')}`;
     }
 }
 
+// TTS (native)
 let ttsRetryCount = 0;
 const TTS_MAX_RETRIES = 3;
 let pendingTTSText = null;
 
 function speakText(text) {
-    ttsLog(`speakText() llamado con texto de ${text?.length || 0} caracteres`, 'info');
-
-    if (!ttsSupported) {
-        ttsLog('TTS no soportado, abortando', 'error');
-        return;
-    }
-
+    if (!ttsSupported) return;
     const ttsEnabled = document.getElementById('ttsEnabled');
-    if (!ttsEnabled || !ttsEnabled.checked) {
-        ttsLog('TTS deshabilitado por usuario, abortando', 'warning');
-        return;
-    }
+    if (!ttsEnabled || !ttsEnabled.checked) return;
 
-    // Guardar texto pendiente y resetear contador de reintentos
     pendingTTSText = text;
     ttsRetryCount = 0;
 
-    // Cancel any ongoing speech
     if (speechSynthesis.speaking || speechSynthesis.pending) {
-        ttsLog('Cancelando speech anterior...', 'warning');
         speechSynthesis.cancel();
     }
 
-    // Delay para evitar interferencia con scroll/focus del mensaje nuevo
-    ttsLog('Esperando 500ms antes de hablar (evitar interferencia UI)...', 'info');
     setTimeout(() => doSpeak(text), 500);
 }
 
 function doSpeak(text) {
-    ttsLog(`Preparando utterance para: "${text.substring(0, 50)}${text.length > 50 ? '...' : ''}"`, 'info');
-
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'es-AR';
     utterance.rate = 1.0;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
 
-    // Try to use a Spanish voice
     const voice = getSpanishVoice();
-    if (voice) {
-        utterance.voice = voice;
-        ttsLog(`Usando voz: ${voice.name} (${voice.lang})`, 'info');
-    } else {
-        ttsLog('No se encontro voz en espanol, usando default', 'warning');
-    }
+    if (voice) utterance.voice = voice;
 
     utterance.onstart = function() {
-        ttsLog('EVENT: onstart - Comenzo a reproducir', 'success');
-        ttsRetryCount = 0; // Reset en éxito
+        ttsRetryCount = 0;
         pendingTTSText = null;
         updateVoiceUI('speaking');
     };
-
-    utterance.onend = function() {
-        ttsLog('EVENT: onend - Termino de reproducir', 'success');
-        updateVoiceUI('idle');
-    };
-
+    utterance.onend = function() { updateVoiceUI('idle'); };
     utterance.onerror = function(event) {
-        ttsLog(`EVENT: onerror - Error: ${event.error}`, 'error');
         updateVoiceUI('idle');
-
-        // Reintentar si fue "interrupted" y no superamos el máximo
         if (event.error === 'interrupted' && ttsRetryCount < TTS_MAX_RETRIES && pendingTTSText) {
             ttsRetryCount++;
-            ttsLog(`Reintentando TTS (intento ${ttsRetryCount}/${TTS_MAX_RETRIES}) en 300ms...`, 'warning');
-            setTimeout(() => {
-                if (pendingTTSText) {
-                    doSpeak(pendingTTSText);
-                }
-            }, 300);
+            setTimeout(() => { if (pendingTTSText) doSpeak(pendingTTSText); }, 300);
         } else if (ttsRetryCount >= TTS_MAX_RETRIES) {
-            ttsLog('Maximo de reintentos alcanzado, abortando TTS', 'error');
             pendingTTSText = null;
         }
     };
 
-    utterance.onpause = () => ttsLog('EVENT: onpause', 'warning');
-    utterance.onresume = () => ttsLog('EVENT: onresume', 'info');
-
-    ttsLog('Llamando speechSynthesis.speak()...', 'info');
     speechSynthesis.speak(utterance);
 
-    // Verificar estado inmediatamente
     setTimeout(() => {
-        ttsLog(`Estado post-speak: speaking=${speechSynthesis.speaking}, pending=${speechSynthesis.pending}, paused=${speechSynthesis.paused}`, 'info');
-
-        // Workaround para Chrome: a veces se queda "pending" sin empezar
         if (speechSynthesis.pending && !speechSynthesis.speaking) {
-            ttsLog('Detectado estado pending sin speaking, intentando resume()...', 'warning');
             speechSynthesis.resume();
         }
     }, 200);
 }
 
-// Stop TTS when user starts typing or recording
 function stopSpeaking() {
     if (ttsSupported && speechSynthesis.speaking) {
         speechSynthesis.cancel();
@@ -2293,156 +2544,21 @@ function stopSpeaking() {
     }
 }
 
-// ===========================================
-// TTS DEBUG MODAL
-// ===========================================
-
-let ttsLogs = [];
-
-function ttsLog(message, type = 'info') {
-    const now = new Date();
-    const time = now.toLocaleTimeString('es-AR', { hour12: false }) + '.' + now.getMilliseconds().toString().padStart(3, '0');
-    const entry = { time, message, type };
-    ttsLogs.push(entry);
-
-    // Keep only last 100 logs
-    if (ttsLogs.length > 100) {
-        ttsLogs.shift();
-    }
-
-    // Also log to console
-    console.log(`[TTS ${type.toUpperCase()}] ${message}`);
-
-    // Update modal if open
-    updateTTSDebugLogs();
-}
-
-function updateTTSDebugLogs() {
-    const logsContainer = document.getElementById('ttsDebugLogs');
-    if (!logsContainer) return;
-
-    logsContainer.innerHTML = ttsLogs.map(log => `
-        <div class="tts-log-entry">
-            <span class="tts-log-time">${log.time}</span>
-            <span class="tts-log-${log.type}">${log.message}</span>
-        </div>
-    `).join('');
-
-    // Auto-scroll to bottom
-    logsContainer.scrollTop = logsContainer.scrollHeight;
-}
-
-function updateTTSDebugStatus() {
-    document.getElementById('debugTtsSupported').textContent = ttsSupported ? 'Si' : 'No';
-    document.getElementById('debugTtsEnabled').textContent = document.getElementById('ttsEnabled')?.checked ? 'Si' : 'No';
-    document.getElementById('debugVoicesCount').textContent = availableVoices.length;
-
-    const voice = getSpanishVoice();
-    document.getElementById('debugSelectedVoice').textContent = voice ? `${voice.name} (${voice.lang})` : 'Ninguna';
-
-    if (ttsSupported) {
-        document.getElementById('debugIsSpeaking').textContent = speechSynthesis.speaking ? 'Si' : 'No';
-        document.getElementById('debugIsPending').textContent = speechSynthesis.pending ? 'Si' : 'No';
-        document.getElementById('debugIsPaused').textContent = speechSynthesis.paused ? 'Si' : 'No';
-    }
-}
-
-function openTTSDebugModal() {
-    updateTTSDebugStatus();
-    updateTTSDebugLogs();
-
-    const modal = new coreui.Modal(document.getElementById('ttsDebugModal'));
-    modal.show();
-
-    // Update status every second while modal is open
-    const statusInterval = setInterval(updateTTSDebugStatus, 1000);
-
-    document.getElementById('ttsDebugModal').addEventListener('hidden.coreui.modal', () => {
-        clearInterval(statusInterval);
-    }, { once: true });
-}
-
-function clearTTSLogs() {
-    ttsLogs = [];
-    updateTTSDebugLogs();
-}
-
-function testTTSFromModal() {
-    ttsLog('Iniciando test manual de TTS...', 'info');
-
-    if (!ttsSupported) {
-        ttsLog('ERROR: TTS no soportado en este navegador', 'error');
-        return;
-    }
-
-    // Cancel any ongoing speech
-    if (speechSynthesis.speaking) {
-        ttsLog('Cancelando speech anterior...', 'warning');
-        speechSynthesis.cancel();
-    }
-
-    const testText = 'Hola, esto es una prueba de texto a voz.';
-    ttsLog(`Texto a reproducir: "${testText}"`, 'info');
-
-    const utterance = new SpeechSynthesisUtterance(testText);
-    utterance.lang = 'es-AR';
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-    utterance.volume = 1.0;
-
-    const voice = getSpanishVoice();
-    if (voice) {
-        utterance.voice = voice;
-        ttsLog(`Usando voz: ${voice.name} (${voice.lang})`, 'info');
-    } else {
-        ttsLog('No se encontro voz en espanol, usando default', 'warning');
-    }
-
-    utterance.onstart = () => {
-        ttsLog('EVENT: onstart - Comenzo a hablar', 'success');
-        updateTTSDebugStatus();
-    };
-
-    utterance.onend = () => {
-        ttsLog('EVENT: onend - Termino de hablar', 'success');
-        updateTTSDebugStatus();
-    };
-
-    utterance.onerror = (event) => {
-        ttsLog(`EVENT: onerror - Error: ${event.error}`, 'error');
-        updateTTSDebugStatus();
-    };
-
-    utterance.onpause = () => ttsLog('EVENT: onpause - Pausado', 'warning');
-    utterance.onresume = () => ttsLog('EVENT: onresume - Resumido', 'info');
-
-    ttsLog('Llamando speechSynthesis.speak()...', 'info');
-    speechSynthesis.speak(utterance);
-    ttsLog(`Estado despues de speak(): speaking=${speechSynthesis.speaking}, pending=${speechSynthesis.pending}`, 'info');
-}
-
-// Test function - run from console: testTTS()
-function testTTS() {
-    testTTSFromModal();
-}
-
-// ===========================================
+// ============================================
 // OpenAI Speech Providers (STT/TTS)
-// ===========================================
+// ============================================
 
 let sttProvider = 'native';
 let ttsProvider = 'native';
 let openaiMediaRecorder = null;
 let openaiAudioChunks = [];
-let currentSttMetadata = null; // Para guardar metadata STT del mensaje actual
+let currentSttMetadata = null;
 
 function initSpeechProviders() {
-    // Cargar preferencias de localStorage
     sttProvider = localStorage.getItem('sttProvider') || 'native';
     ttsProvider = localStorage.getItem('ttsProvider') || 'native';
     const ttsVoice = localStorage.getItem('ttsVoice') || 'alloy';
 
-    // Actualizar selectores
     const sttSelect = document.getElementById('sttProvider');
     const ttsSelect = document.getElementById('ttsProvider');
     const voiceSelect = document.getElementById('ttsVoice');
@@ -2451,10 +2567,8 @@ function initSpeechProviders() {
     if (ttsSelect) ttsSelect.value = ttsProvider;
     if (voiceSelect) voiceSelect.value = ttsVoice;
 
-    // Mostrar/ocultar selector de voz
     updateVoiceSelectorVisibility();
 
-    // Cerrar dropdown al hacer click fuera
     document.addEventListener('click', function(e) {
         const dropdown = document.getElementById('settingsDropdown');
         const btn = document.querySelector('.chat-settings-btn');
@@ -2462,70 +2576,46 @@ function initSpeechProviders() {
             dropdown.classList.remove('show');
         }
     });
-
-    console.log(`Speech providers initialized: STT=${sttProvider}, TTS=${ttsProvider}`);
 }
 
 function toggleSettingsDropdown() {
-    const dropdown = document.getElementById('settingsDropdown');
-    if (dropdown) {
-        dropdown.classList.toggle('show');
-    }
+    document.getElementById('settingsDropdown')?.classList.toggle('show');
 }
 
 function onTtsVoiceChange() {
     const voiceSelect = document.getElementById('ttsVoice');
-    if (voiceSelect) {
-        localStorage.setItem('ttsVoice', voiceSelect.value);
-        console.log(`TTS voice changed to: ${voiceSelect.value}`);
-    }
+    if (voiceSelect) localStorage.setItem('ttsVoice', voiceSelect.value);
 }
 
 function onSttProviderChange() {
-    const select = document.getElementById('sttProvider');
-    sttProvider = select.value;
+    sttProvider = document.getElementById('sttProvider').value;
     localStorage.setItem('sttProvider', sttProvider);
-    console.log(`STT provider changed to: ${sttProvider}`);
 }
 
 function onTtsProviderChange() {
-    const select = document.getElementById('ttsProvider');
-    ttsProvider = select.value;
+    ttsProvider = document.getElementById('ttsProvider').value;
     localStorage.setItem('ttsProvider', ttsProvider);
     updateVoiceSelectorVisibility();
-    console.log(`TTS provider changed to: ${ttsProvider}`);
 }
 
 function updateVoiceSelectorVisibility() {
     const voiceSelector = document.getElementById('ttsVoiceSelector');
-    if (voiceSelector) {
-        voiceSelector.style.display = ttsProvider === 'openai' ? 'flex' : 'none';
-    }
+    if (voiceSelector) voiceSelector.style.display = ttsProvider === 'openai' ? 'flex' : 'none';
 }
 
-// ===========================================
-// OpenAI Whisper STT (Speech-to-Text)
-// ===========================================
-
+// OpenAI Whisper STT
 async function startOpenAIRecording() {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
         openaiAudioChunks = [];
-        openaiMediaRecorder = new MediaRecorder(stream, {
-            mimeType: 'audio/webm;codecs=opus'
-        });
+        openaiMediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
 
         openaiMediaRecorder.ondataavailable = (event) => {
-            if (event.data.size > 0) {
-                openaiAudioChunks.push(event.data);
-            }
+            if (event.data.size > 0) openaiAudioChunks.push(event.data);
         };
 
         openaiMediaRecorder.onstop = async () => {
-            // Detener todas las pistas del stream
             stream.getTracks().forEach(track => track.stop());
-
             const audioBlob = new Blob(openaiAudioChunks, { type: 'audio/webm' });
             await transcribeWithWhisper(audioBlob);
         };
@@ -2533,9 +2623,7 @@ async function startOpenAIRecording() {
         openaiMediaRecorder.start();
         isRecording = true;
         updateVoiceUI('recording');
-        console.log('OpenAI recording started');
     } catch (error) {
-        console.error('Error starting OpenAI recording:', error);
         showVoiceWarning('Error al acceder al microfono: ' + error.message);
     }
 }
@@ -2544,7 +2632,6 @@ function stopOpenAIRecording() {
     if (openaiMediaRecorder && openaiMediaRecorder.state !== 'inactive') {
         openaiMediaRecorder.stop();
         isRecording = false;
-        console.log('OpenAI recording stopped');
     }
 }
 
@@ -2555,11 +2642,8 @@ async function transcribeWithWhisper(audioBlob) {
         const formData = new FormData();
         formData.append('audio', audioBlob, 'audio.webm');
         formData.append('language', 'es');
-        if (currentChatId) {
-            formData.append('chat_id', currentChatId);
-        }
+        if (currentChatId) formData.append('chat_id', currentChatId);
 
-        // Usar API_TOKEN global y no setear Content-Type (el browser lo hace automatico para FormData)
         const response = await fetch('/api/speech/transcribe', {
             method: 'POST',
             headers: {
@@ -2572,176 +2656,99 @@ async function transcribeWithWhisper(audioBlob) {
         const data = await response.json();
 
         if (data.status && data.data.text) {
-            const text = data.data.text.trim();
-            console.log('Whisper transcription:', text);
-
-            // Guardar metadata STT para el mensaje
             currentSttMetadata = {
                 stt_provider: data.data.stt_provider,
                 stt_model: data.data.stt_model,
                 stt_duration_ms: data.data.stt_duration_ms,
                 stt_cost: data.data.stt_cost
             };
-
-            // Poner texto en el input y enviar
-            const messageInput = document.getElementById('messageInput');
-            messageInput.value = text;
+            document.getElementById('messageInput').value = data.data.text.trim();
             updateVoiceUI('idle');
             sendMessage();
         } else {
-            console.error('Whisper transcription failed:', data.message);
             showVoiceWarning(data.message || 'Error al transcribir el audio');
             updateVoiceUI('idle');
         }
     } catch (error) {
-        console.error('Whisper transcription error:', error);
         showVoiceWarning('Error al transcribir: ' + error.message);
         updateVoiceUI('idle');
     }
 }
 
-// ===========================================
-// OpenAI TTS (Text-to-Speech)
-// ===========================================
-
+// OpenAI TTS
 let currentAudio = null;
 
 async function speakWithOpenAI(text, messageId = null) {
-    ttsLog(`speakWithOpenAI() llamado con texto de ${text?.length || 0} caracteres`, 'info');
-
     const ttsEnabled = document.getElementById('ttsEnabled');
-    if (!ttsEnabled || !ttsEnabled.checked) {
-        ttsLog('TTS deshabilitado por usuario, abortando', 'warning');
-        return;
-    }
+    if (!ttsEnabled || !ttsEnabled.checked) return;
 
-    // Detener audio anterior si existe
-    if (currentAudio) {
-        currentAudio.pause();
-        currentAudio = null;
-    }
-
+    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
     updateVoiceUI('speaking');
 
     try {
         const voice = document.getElementById('ttsVoice')?.value || 'alloy';
-
         const response = await apiFetch('/api/speech/synthesize', {
             method: 'POST',
-            body: JSON.stringify({
-                text: text,
-                voice: voice,
-                message_id: messageId
-            })
+            body: JSON.stringify({ text, voice, message_id: messageId })
         });
 
         const data = await response.json();
 
         if (data.status && data.data.audio_base64) {
-            ttsLog(`Audio recibido: ${data.data.tts_characters} chars, voz: ${data.data.tts_voice}`, 'success');
-
-            // Update TTS cost in UI
             if (data.data.tts_cost > 0) {
                 const currentTtsCost = parseFloat(document.getElementById('chatTtsCost').textContent) || 0;
                 document.getElementById('chatTtsCost').textContent = (currentTtsCost + data.data.tts_cost).toFixed(4);
                 updateTotalCost();
             }
 
-            // Crear elemento de audio y reproducir
             const audioData = `data:${data.data.content_type};base64,${data.data.audio_base64}`;
             currentAudio = new Audio(audioData);
-
-            currentAudio.onended = () => {
-                ttsLog('Audio terminado de reproducir', 'success');
-                updateVoiceUI('idle');
-                currentAudio = null;
-            };
-
-            currentAudio.onerror = (e) => {
-                ttsLog(`Error reproduciendo audio: ${e.message || 'unknown'}`, 'error');
-                updateVoiceUI('idle');
-                currentAudio = null;
-            };
-
+            currentAudio.onended = () => { updateVoiceUI('idle'); currentAudio = null; };
+            currentAudio.onerror = () => { updateVoiceUI('idle'); currentAudio = null; };
             await currentAudio.play();
-            ttsLog('Audio comenzando a reproducir', 'success');
         } else {
-            ttsLog(`Error de OpenAI TTS: ${data.message}`, 'error');
             updateVoiceUI('idle');
         }
     } catch (error) {
-        ttsLog(`Error en speakWithOpenAI: ${error.message}`, 'error');
         updateVoiceUI('idle');
     }
 }
 
-// ===========================================
-// Funciones Unificadas (Native vs OpenAI)
-// ===========================================
-
-// Wrapper para iniciar grabacion (decide native vs openai)
+// Unified wrappers
 async function startVoiceRecordingUnified(e) {
-    if (!currentChatId) {
-        showVoiceWarning('Selecciona o crea una conversacion primero.');
-        return;
-    }
-
-    if (isLoading || isRecording) {
-        return;
-    }
-
-    if (sttProvider === 'openai') {
-        await startOpenAIRecording();
-    } else {
-        await startVoiceRecording(e);
-    }
+    if (!currentChatId) { showVoiceWarning('Selecciona o crea una conversacion primero.'); return; }
+    if (isLoading || isRecording) return;
+    if (sttProvider === 'openai') await startOpenAIRecording();
+    else await startVoiceRecording(e);
 }
 
-// Wrapper para detener grabacion (decide native vs openai)
 function stopVoiceRecordingUnified(e) {
     if (!isRecording) return;
-
-    if (sttProvider === 'openai') {
-        stopOpenAIRecording();
-    } else {
-        stopVoiceRecording(e);
-    }
+    if (sttProvider === 'openai') stopOpenAIRecording();
+    else stopVoiceRecording(e);
 }
 
-// Wrapper para TTS (decide native vs openai)
 function speakTextUnified(text, messageId = null) {
-    if (ttsProvider === 'openai') {
-        speakWithOpenAI(text, messageId);
-    } else {
-        speakText(text);
-    }
+    if (ttsProvider === 'openai') speakWithOpenAI(text, messageId);
+    else speakText(text);
 }
 
-// Detener cualquier tipo de audio
 function stopSpeakingUnified() {
-    // Detener audio OpenAI
-    if (currentAudio) {
-        currentAudio.pause();
-        currentAudio = null;
-    }
-
-    // Detener TTS nativo
-    if (ttsSupported && speechSynthesis.speaking) {
-        speechSynthesis.cancel();
-    }
-
+    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+    if (ttsSupported && speechSynthesis.speaking) speechSynthesis.cancel();
     updateVoiceUI('idle');
 }
 
-// ===========================================
+// ============================================
 // EVALUATION SYSTEM
-// ===========================================
+// ============================================
 
 let finishedChatHasEvaluation = false;
 
 function showFinishedPanel(hasEvaluation) {
     finishedChatHasEvaluation = hasEvaluation;
     document.getElementById('inputContainer').style.display = 'none';
+    document.getElementById('actionBar').style.display = 'none';
     document.getElementById('finishedPanel').style.display = 'block';
 
     const btnText = document.getElementById('finishedEvalBtnText');
@@ -2762,19 +2769,11 @@ function showInputPanel() {
 }
 
 function handleFinishedEvalAction() {
-    if (finishedChatHasEvaluation) {
-        showEvaluationForChat(currentChatId);
-    } else {
-        triggerEvaluation(currentChatId);
-    }
+    if (finishedChatHasEvaluation) showEvaluationForChat(currentChatId);
+    else triggerEvaluation(currentChatId);
 }
 
 async function triggerEvaluation(chatId) {
-    // Remove existing banner
-    const existing = document.querySelector('.chat-finished-banner');
-    if (existing) existing.remove();
-
-    // Show evaluating indicator
     const container = document.getElementById('messagesContainer');
     const indicator = document.createElement('div');
     indicator.className = 'evaluating-indicator';
@@ -2787,19 +2786,11 @@ async function triggerEvaluation(chatId) {
     container.scrollTop = container.scrollHeight;
 
     try {
-        console.log('triggerEvaluation: calling POST /api/chats/' + chatId + '/evaluate');
-        const response = await apiFetch(`/api/chats/${chatId}/evaluate`, {
-            method: 'POST'
-        });
-
+        const response = await apiFetch(`/api/chats/${chatId}/evaluate`, { method: 'POST' });
         const data = await response.json();
-        console.log('triggerEvaluation: response', data);
-
-        // Remove indicator
         document.getElementById('evaluatingIndicator')?.remove();
 
         if (data.status) {
-            // Update eval cost in header
             if (data.data.cost) {
                 document.getElementById('chatEvalCost').textContent = parseFloat(data.data.cost).toFixed(4);
                 document.getElementById('chatEvalStat').style.display = 'flex';
@@ -2808,14 +2799,12 @@ async function triggerEvaluation(chatId) {
 
             showFinishedPanel(true);
             showEvaluationModal(data.data);
-            loadChats(); // Refresh sidebar badges
+            loadChats();
         } else {
             showFinishedPanel(false);
-            console.error('triggerEvaluation: API error', data.message);
             alert(data.message || 'Error al evaluar la conversacion');
         }
     } catch (error) {
-        console.error('triggerEvaluation: exception', error);
         document.getElementById('evaluatingIndicator')?.remove();
         showFinishedPanel(false);
         alert('Error al evaluar la conversacion');
@@ -2826,14 +2815,9 @@ async function showEvaluationForChat(chatId) {
     try {
         const response = await apiFetch(`/api/chats/${chatId}/evaluation`);
         const data = await response.json();
-
-        if (data.status) {
-            showEvaluationModal(data.data);
-        } else {
-            alert(data.message || 'No se encontro la evaluacion');
-        }
+        if (data.status) showEvaluationModal(data.data);
+        else alert(data.message || 'No se encontro la evaluacion');
     } catch (error) {
-        console.error('Error loading evaluation:', error);
         alert('Error al cargar la evaluacion');
     }
 }
@@ -2866,18 +2850,13 @@ function showEvaluationModal(evaluation) {
     const passed = evaluation.passed;
     const passClass = passed ? 'passed' : 'failed';
 
-    // Score circle
     scoreCircle.className = 'eval-score-circle ' + passClass;
     scoreValue.textContent = score + '%';
     scoreLabel.textContent = passed ? 'Aprobado' : 'No aprobado';
 
-    // Progress bar
     progressFill.className = 'eval-progress-fill ' + passClass;
-    setTimeout(() => {
-        progressFill.style.width = score + '%';
-    }, 100);
+    setTimeout(() => { progressFill.style.width = score + '%'; }, 100);
 
-    // Usage info (tokens, cost, model)
     const usageInfo = document.getElementById('evalUsageInfo');
     if (evaluation.cost || evaluation.total_tokens) {
         document.getElementById('evalModelName').textContent = evaluation.model || '-';
@@ -2888,7 +2867,6 @@ function showEvaluationModal(evaluation) {
         usageInfo.style.display = 'none';
     }
 
-    // Criteria list
     criteriaList.innerHTML = '';
     if (evaluation.criteria_results && evaluation.criteria_results.length > 0) {
         evaluation.criteria_results.forEach(criterion => {
@@ -2909,15 +2887,11 @@ function showEvaluationModal(evaluation) {
                 <div class="eval-criterion-justification">${escapeHtml(criterion.justification || '')}</div>
             `;
 
-            li.addEventListener('click', function() {
-                this.classList.toggle('expanded');
-            });
-
+            li.addEventListener('click', function() { this.classList.toggle('expanded'); });
             criteriaList.appendChild(li);
         });
     }
 
-    // Feedback
     if (evaluation.overall_feedback) {
         feedbackDiv.style.display = 'block';
         feedbackDiv.innerHTML = '<strong><i class="fas fa-comment-alt me-1"></i>Feedback general:</strong><br>' + escapeHtml(evaluation.overall_feedback);
@@ -2925,7 +2899,6 @@ function showEvaluationModal(evaluation) {
         feedbackDiv.style.display = 'none';
     }
 
-    // Show modal
     const modal = new coreui.Modal(document.getElementById('evaluationModal'));
     modal.show();
 }

@@ -4,63 +4,25 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Chat;
-use App\Services\ChatService;
+use App\Services\AdvancedChatService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class ChatController extends Controller
+class AdvancedChatController extends Controller
 {
-    protected ChatService $chatService;
+    protected AdvancedChatService $advancedChatService;
 
-    public function __construct(ChatService $chatService)
+    public function __construct(AdvancedChatService $advancedChatService)
     {
-        $this->chatService = $chatService;
-    }
-
-    public function index(): JsonResponse
-    {
-        $chats = Chat::with(['agent:id,name', 'evaluation:id,chat_id,overall_score,cost,prompt_tokens,completion_tokens'])
-            ->orderBy('updated_at', 'desc')
-            ->get()
-            ->map(fn($chat) => [
-                'id' => $chat->id,
-                'title' => $chat->title,
-                'status' => $chat->status,
-                'chat_type' => $chat->chat_type,
-                'agent' => $chat->agent ? [
-                    'id' => $chat->agent->id,
-                    'name' => $chat->agent->name,
-                ] : null,
-                'scene_image_url' => $chat->scene_image_url,
-                'total_tokens' => $chat->total_tokens,
-                'total_cost' => $chat->total_cost,
-                'total_llm_cost' => $chat->total_llm_cost,
-                'total_tts_cost' => $chat->total_tts_cost,
-                'total_stt_cost' => $chat->total_stt_cost,
-                'total_image_cost' => $chat->total_image_cost,
-                'evaluation' => $chat->evaluation ? [
-                    'overall_score' => (float) $chat->evaluation->overall_score,
-                    'passed' => $chat->evaluation->isPassed(),
-                    'cost' => $chat->evaluation->cost,
-                    'tokens' => ($chat->evaluation->prompt_tokens ?? 0) + ($chat->evaluation->completion_tokens ?? 0),
-                ] : null,
-                'created_at' => $chat->created_at,
-                'updated_at' => $chat->updated_at,
-            ]);
-
-        return response()->json([
-            'status' => true,
-            'data' => $chats,
-            'message' => 'OK',
-            'errors' => [],
-        ]);
+        $this->advancedChatService = $advancedChatService;
     }
 
     public function store(Request $request): JsonResponse
     {
         try {
             $agentId = $request->input('agent_id');
-            $chat = $this->chatService->createChat($agentId);
+            $chat = $this->advancedChatService->createChat($agentId);
+            $chat->refresh();
 
             return response()->json([
                 'status' => true,
@@ -68,19 +30,23 @@ class ChatController extends Controller
                     'id' => $chat->id,
                     'title' => $chat->title,
                     'status' => $chat->status,
+                    'chat_type' => $chat->chat_type,
                     'agent' => [
                         'id' => $chat->agent->id,
                         'name' => $chat->agent->name,
                     ],
+                    'scene_data' => $chat->scene_data,
+                    'scene_image_url' => $chat->scene_image_url,
                     'total_tokens' => $chat->total_tokens,
                     'total_cost' => $chat->total_cost,
                     'total_llm_cost' => $chat->total_llm_cost,
                     'total_tts_cost' => $chat->total_tts_cost,
                     'total_stt_cost' => $chat->total_stt_cost,
+                    'total_image_cost' => $chat->total_image_cost,
                     'created_at' => $chat->created_at,
                     'updated_at' => $chat->updated_at,
                 ],
-                'message' => 'Chat creado exitosamente',
+                'message' => 'Chat advanced creado exitosamente',
                 'errors' => [],
             ], 201);
         } catch (\Exception $e) {
@@ -136,29 +102,6 @@ class ChatController extends Controller
                 'updated_at' => $chat->updated_at,
             ],
             'message' => 'OK',
-            'errors' => [],
-        ]);
-    }
-
-    public function destroy(int $id): JsonResponse
-    {
-        $chat = Chat::find($id);
-
-        if (!$chat) {
-            return response()->json([
-                'status' => false,
-                'data' => null,
-                'message' => 'Chat no encontrado',
-                'errors' => [],
-            ], 404);
-        }
-
-        $chat->delete();
-
-        return response()->json([
-            'status' => true,
-            'data' => null,
-            'message' => 'Chat eliminado exitosamente',
             'errors' => [],
         ]);
     }

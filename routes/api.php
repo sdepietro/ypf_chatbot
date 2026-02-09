@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\Api\AdvancedChatController;
+use App\Http\Controllers\Api\AdvancedMessageController;
 use App\Http\Controllers\Api\AgentController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\ConfigController;
+use App\Http\Controllers\Api\EvaluationController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\SpeechController;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +29,10 @@ Route::middleware('master.auth')->group(function () {
     Route::get('/chats/{chatId}/messages', [MessageController::class, 'index']);
     Route::post('/chats/{chatId}/messages', [MessageController::class, 'store']);
 
+    // Evaluations
+    Route::post('/chats/{chatId}/evaluate', [EvaluationController::class, 'evaluate']);
+    Route::get('/chats/{chatId}/evaluation', [EvaluationController::class, 'show']);
+
     // Agents
     Route::get('/agents', [AgentController::class, 'index']);
     Route::post('/agents', [AgentController::class, 'store']);
@@ -37,4 +44,10 @@ Route::middleware('master.auth')->group(function () {
     Route::post('/speech/transcribe', [SpeechController::class, 'transcribe']);
     Route::post('/speech/synthesize', [SpeechController::class, 'synthesize']);
     Route::get('/speech/voices', [SpeechController::class, 'voices']);
+
+    // Advanced Chat
+    Route::post('/advanced/chats', [AdvancedChatController::class, 'store']);
+    Route::get('/advanced/chats/{id}', [AdvancedChatController::class, 'show']);
+    Route::post('/advanced/chats/{chatId}/messages', [AdvancedMessageController::class, 'store']);
+    Route::post('/advanced/chats/{chatId}/actions', [AdvancedMessageController::class, 'storeAction']);
 });
