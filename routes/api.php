@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AdvancedMessageController;
 use App\Http\Controllers\Api\AgentController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\ConfigController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\EvaluationController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\SpeechController;
@@ -44,6 +45,9 @@ Route::middleware('master.auth')->group(function () {
     Route::post('/speech/transcribe', [SpeechController::class, 'transcribe']);
     Route::post('/speech/synthesize', [SpeechController::class, 'synthesize']);
     Route::get('/speech/voices', [SpeechController::class, 'voices']);
+
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index']);
 
     // Advanced Chat
     Route::post('/advanced/chats', [AdvancedChatController::class, 'store']);

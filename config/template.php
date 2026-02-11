@@ -5,6 +5,12 @@ return [
 
     'template_menu' => [
         [
+            'text' => 'Dashboard',
+            'url' => 'dashboard.index',
+            'icon' => 'fas fa-chart-line',
+            'can' => null,
+        ],
+        [
             'text' => 'Chat',
             'url' => 'chat.index',
             'icon' => 'fas fa-comments',

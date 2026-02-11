@@ -32,6 +32,22 @@ class Agent extends Model
 
     public static function getRandomActive(): ?self
     {
-        return self::active()->inRandomOrder()->first();
+        $recentAgentIds = Chat::orderByDesc('id')
+            ->take(3)
+            ->pluck('agent_id')
+            ->unique()
+            ->toArray();
+
+        $agent = self::active()
+            ->whereNotIn('id', $recentAgentIds)
+            ->inRandomOrder()
+            ->first();
+
+        // Fallback: if all agents were used recently, pick any active one
+        if (!$agent) {
+            $agent = self::active()->inRandomOrder()->first();
+        }
+
+        return $agent;
     }
 }

@@ -4,6 +4,7 @@ use App\Http\Controllers\Web\AgentPageController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\ChatPageController;
 use App\Http\Controllers\Web\ConfigPageController;
+use App\Http\Controllers\Web\DashboardPageController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +16,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Protected routes
 Route::middleware('master.auth')->group(function () {
     Route::get('/', [ChatPageController::class, 'index'])->name('chat.index');
+    Route::get('/dashboard', [DashboardPageController::class, 'index'])->name('dashboard.index');
     Route::get('/agents', [AgentPageController::class, 'index'])->name('agents.index');
     Route::get('/configs', [ConfigPageController::class, 'index'])->name('configs.index');
 });
